@@ -8,7 +8,7 @@ const Chats = () => {
   ];
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md w-[30%] min-w-[270px]   h-full overflow-y-auto border border-black">
+    <div className="bg-white p-4 rounded-lg shadow-md w-full min-w-[220px]   h-full overflow-y-auto border border-black">
       <h3 className="text-lg font-bold mb-4">Chats</h3>
       <ul>
         {chatList.map((chat) => (
