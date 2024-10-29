@@ -1,6 +1,20 @@
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../service/operation/auth";
 
 const Login = () => {
-  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+
+  const handleLogin = async (data) => {
+    await login(data, dispatch, navigate);
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -8,7 +22,7 @@ const Login = () => {
         <h2 className="text-2xl font-bold mb-6 text-gray-900 text-center">
           Login to Your Account
         </h2>
-        <form >
+        <form onSubmit={handleSubmit(handleLogin)}>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -19,9 +33,11 @@ const Login = () => {
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter your username"
-              
+              {...register("username", { required: true })}
             />
-           
+            {errors.username && (
+              <span className=" text-blue-800">username is required</span>
+            )}
           </div>
           <div className="mb-6">
             <label
@@ -34,9 +50,11 @@ const Login = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700  leading-tight focus:outline-none focus:shadow-outline"
               type="password"
               placeholder="Enter your password"
-             
+              {...register("password", { required: true })}
             />
-           
+            {errors.username && (
+              <span className=" text-blue-800">password is required</span>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button
@@ -50,12 +68,9 @@ const Login = () => {
             </span>
           </div>
           <div className="mt-6 text-center">
-            <p className="text-gray-700">
+            <p onClick={() => navigate("/signup")} className="text-gray-700">
               Don't have an account?
-              <span
-               
-                className="text-blue-500 hover:text-blue-800 font-bold cursor-pointer"
-              >
+              <span className="text-blue-500 hover:text-blue-800 font-bold cursor-pointer">
                 Sign up
               </span>
             </p>
