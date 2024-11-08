@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: true,
-  auhtLoading: false,
+  authLoading: false,
 };
 
 export const authSlice = createSlice({
@@ -13,7 +13,7 @@ export const authSlice = createSlice({
       state.user = value.payload;
     },
     setAuthLoading(state, value) {
-      state.auhtLoading = value.payload;
+      state.authLoading = value.payload;
     },
   },
 });
