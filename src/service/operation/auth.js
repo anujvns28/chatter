@@ -1,6 +1,7 @@
 import axios from "axios";
 import { authEndPoints } from "../api";
-import { setAuthLoading } from "../../slice/authSlice";
+import { setAuthLoading, setUser } from "../../slice/authSlice";
+import Cookies from "js-cookie";
 
 const {
   CHECK_USERNAME_API,
@@ -61,7 +62,7 @@ export const signup = async (data, dispatch, navigate) => {
     if (response) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       dispatch(setUser(response.data.user));
-      navigate("/");
+      window.location.href = "/";
     }
 
     console.log("signup response....", response);
@@ -80,6 +81,12 @@ export const login = async (data, dispatch, navigate) => {
       data: data,
       withCredentials: true,
     });
+
+    if (response) {
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      dispatch(setUser(response.data.user));
+      window.location.href = "/";
+    }
 
     console.log("login response....", response);
   } catch (err) {

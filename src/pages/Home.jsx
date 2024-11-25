@@ -41,7 +41,7 @@ const Home = () => {
 
         <div className="flex h-full flex-row md:gap-6 sm:gap-6 gap-3 w-full">
           {/* chats */}
-          <div className="sm:w-[30%] w-full">
+          <div className="sm:w-[40%] w-full">
             <Chats />
           </div>
 

@@ -6,15 +6,26 @@ import { IoMdSettings } from "react-icons/io";
 import { MdWbSunny } from "react-icons/md";
 import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
+  const { user } = useSelector((state) => state.auth);
+
+  console.log(user, "user infromaation");
+
   return (
     <div className="flex md:flex-col flex-row-reverse justify-between py-4 border md:h-full h-[50px] min-w-[80px] rounded-xl border-black md:w-[8%] w-full bg-blue-600 ">
       <div className="flex items-center justify-center  md:pt-3 w-[30%] md:w-full">
-        <div className="rounded-full text-white bg-slate-600 flex justify-center items-center p-1 border border-black w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
-          <p className="md:text-3xl text-2xl">
-            <FaUser />
-          </p>
+        <div className="rounded-full text-white  flex justify-center items-center  border border-black w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
+          {user ? (
+            <img
+              className="w-full h-full rounded-full  object-center"
+              src={user.profilePic}
+              alt="Profile"
+            />
+          ) : (
+            <FaUser className="md:text-3xl text-2xl" />
+          )}
         </div>
       </div>
 

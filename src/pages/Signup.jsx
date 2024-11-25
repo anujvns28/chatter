@@ -20,7 +20,8 @@ const Signup = () => {
   } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { auhtLoading } = useSelector((state) => state.auth);
+  
+  const { authLoading } = useSelector((state) => state.auth);
 
   const [imagePreview, setImagePreview] = useState(null);
   const [suggestname, setSuggestname] = useState();
@@ -74,7 +75,7 @@ const Signup = () => {
     await signup(formData, dispatch, navigate);
   };
 
-  if (auhtLoading) {
+  if (authLoading) {
     return (
       <div className="h-screen w-screen flex items-center text-black justify-center">
         <div className="custom-loader"></div>
@@ -216,7 +217,10 @@ const Signup = () => {
         <div className="mt-6 text-center">
           <p className="text-gray-700">
             Already have an account?
-            <span className="text-blue-500 hover:text-blue-800 font-bold cursor-pointer">
+            <span
+              onClick={() => navigate("/login")}
+              className="text-blue-500 hover:text-blue-800 font-bold cursor-pointer"
+            >
               Login
             </span>
           </p>
