@@ -4,6 +4,7 @@ import Chats from "../components/common/Chats";
 import ChatField from "../components/common/ChatField";
 import { IoSearch } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
+import SearchUser from "../components/core/chats/SearchUser";
 
 const Home = () => {
   return (
@@ -50,6 +51,8 @@ const Home = () => {
             <ChatField />
           </div>
         </div>
+
+        <SearchUser />
       </div>
     </div>
   );

@@ -7,3 +7,7 @@ export const authEndPoints = {
   LOGIN_API: BASE_URL + "/auth/login",
   LOGOUT_API: BASE_URL + "/auth/logout",
 };
+
+export const userEndPoints = {
+  SEARCH_USER_API: BASE_URL + "/user/searchUser",
+};

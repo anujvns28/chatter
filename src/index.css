@@ -17,3 +17,14 @@
   @keyframes s3{ 
     100%{transform: rotate(1turn)}
   }
+
+
+  .hide-scrollbar {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+  }
+  

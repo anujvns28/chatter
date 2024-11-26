@@ -6,10 +6,12 @@ import { IoMdSettings } from "react-icons/io";
 import { MdWbSunny } from "react-icons/md";
 import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpenSearchBox } from "../../slice/chatSlice";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   console.log(user, "user infromaation");
 
@@ -29,14 +31,17 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="w-full  flex md:-translate-y-16 md:flex-col flex-row  items-center   md:justify-center justify-around   gap-7 text-3xl text-white">
+      <div className="w-full cursor-pointer  flex md:-translate-y-16 md:flex-col flex-row  items-center   md:justify-center justify-around   gap-7 text-3xl text-white">
         <p>
           <IoHome />
         </p>
         <p>
           <IoRadioButtonOn />
         </p>
-        <p className="hidden md:flex">
+        <p
+          className="hidden md:flex"
+          onClick={() => dispatch(setOpenSearchBox(true))}
+        >
           <IoSearch />
         </p>
         <p>
