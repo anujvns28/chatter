@@ -10,7 +10,6 @@ import { setOpenSearchBox } from "../../slice/chatSlice";
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
-  console.log(currentChat);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">

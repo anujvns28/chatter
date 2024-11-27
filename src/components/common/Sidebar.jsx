@@ -7,13 +7,11 @@ import { MdWbSunny } from "react-icons/md";
 import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenSearchBox } from "../../slice/chatSlice";
+import { setOpenSearchBox, setShowNotification } from "../../slice/chatSlice";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  console.log(user, "user infromaation");
 
   return (
     <div className="flex md:flex-col flex-row-reverse justify-between py-4 border md:h-full h-[50px] min-w-[80px] rounded-xl border-black md:w-[8%] w-full bg-blue-600 ">
@@ -44,7 +42,7 @@ const Sidebar = () => {
         >
           <IoSearch />
         </p>
-        <p>
+        <p onClick={() => dispatch(setShowNotification(true))}>
           <MdOutlineNotifications />
         </p>
         <p className="hidden md:flex">

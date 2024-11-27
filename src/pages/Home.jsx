@@ -4,9 +4,12 @@ import Chats from "../components/common/Chats";
 import ChatField from "../components/common/ChatField";
 import { IoSearch } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
-import SearchUser from "../components/core/chats/SearchUser";
+import SearchUser from "../components/core/users/SearchUser";
+import FriendRequestNotification from "../components/core/notification/FriendRequestNotification";
+import { useSelector } from "react-redux";
 
 const Home = () => {
+  const { showNotifaction } = useSelector((state) => state.chat);
   return (
     <div className="h-screen w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
       {/* Search box only for phones */}
@@ -53,6 +56,7 @@ const Home = () => {
         </div>
 
         <SearchUser />
+        {showNotifaction && <FriendRequestNotification />}
       </div>
     </div>
   );

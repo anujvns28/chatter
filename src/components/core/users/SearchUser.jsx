@@ -2,9 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSearchBox } from "../../../slice/chatSlice";
 import { searchUserHandler } from "../../../service/operation/user";
+import FraindRequestComponent from "./FraindRequestComponent";
 
 const searchUser = () => {
-  const { searchUsers } = useSelector((state) => state.chat);
+  const { searchUsers, userLoading } = useSelector((state) => state.chat);
   const searchMoadalRef = useRef();
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
@@ -40,6 +41,7 @@ const searchUser = () => {
 
     return () => clearTimeout(timeout);
   }, [username]);
+  // debounce code ended
 
   return (
     <div className="bg-gray-100 min-h-screen  flex flex-col items-center justify-center relative">
@@ -63,41 +65,7 @@ const searchUser = () => {
             />
 
             {/* User List */}
-            <ul className="mt-4 max-h-[70vh] hide-scrollbar overflow-y-auto">
-              {allUsers ? (
-                allUsers.map((user, index) => (
-                  <li
-                    key={index}
-                    className="p-2 border-b border-gray-200 hover:bg-gray-100 flex items-center justify-between"
-                  >
-                    {/* User Info Section */}
-                    <div className="flex items-center gap-3">
-                      {/* User Image */}
-                      <img
-                        src={user.profilePic} // Placeholder image
-                        alt={`${user.name} profile`}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-700">
-                          {user.name}
-                        </p>
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                      </div>
-                    </div>
-
-                    {/* Send Request Button */}
-                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200">
-                      Send Request
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="text-center text-gray-500 mt-4">
-                  No users found
-                </li>
-              )}
-            </ul>
+            <FraindRequestComponent allUsers={allUsers} />
           </div>
         </div>
       )}
