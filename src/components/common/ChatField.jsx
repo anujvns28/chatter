@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { FaPhoneAlt } from "react-icons/fa";
 import { FaVideo } from "react-icons/fa";
@@ -6,10 +6,53 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import logo from "../../assets/logo.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSearchBox } from "../../slice/chatSlice";
+import {
+  fetchChatDetailsHandler,
+  fetchMessageHandler,
+  sendMessageHandler,
+} from "../../service/operation/chat";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
+  const { user } = useSelector((state) => state.auth);
+  const [chatDetails, setChatDetails] = useState(null);
+  const [inputField, setInputField] = useState("");
+  const [messages, setMessages] = useState(null);
+
   const dispatch = useDispatch();
+
+  const fetchCurrentChat = async () => {
+    if (currentChat) {
+      const result = await fetchChatDetailsHandler(currentChat);
+      if (result) {
+        setChatDetails(result.chatDetails);
+      }
+    }
+  };
+
+  const handleSendMessage = async () => {
+    const data = {
+      content: inputField,
+      chatId: chatDetails._id,
+    };
+
+    await sendMessageHandler(data);
+    setInputField("");
+  };
+
+  // fetching messagess
+  const handleFetchingMessages = async () => {
+    const result = await fetchMessageHandler(currentChat);
+
+    if (result) {
+      setMessages(result.messages);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentChat();
+    handleFetchingMessages();
+  }, [currentChat]);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
@@ -47,10 +90,10 @@ const ChatField = () => {
             <div className="flex flex-row justify-between border-b pb-2 border-black ">
               <div className="flex flex-row gap-2">
                 <div className="rounded-full text-white  flex justify-center items-center  border border-black w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
-                  {false ? (
+                  {chatDetails ? (
                     <img
                       className="w-full h-full rounded-full  object-center"
-                      src={user.profilePic}
+                      src={chatDetails?.users[0]?.profilePic}
                       alt="Profile"
                     />
                   ) : (
@@ -58,9 +101,11 @@ const ChatField = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-[2px]">
-                  <h1 className="font-bold text-xl">Anuj Yadav</h1>
+                  <h1 className="font-bold text-xl">
+                    {chatDetails?.users[0]?.name}
+                  </h1>
                   <div className="flex flex-row gap-1 text-xs">
-                    <p>Online - </p>
+                    <p>{chatDetails?.users[0]?.username}</p>
                     <p>last seen,02:20pm</p>
                   </div>
                 </div>
@@ -80,17 +125,60 @@ const ChatField = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto m-4">
-            <div className="flex justify-start mb-4">
-              <div className="bg-gray-100 p-3 rounded-lg max-w-md">
-                <p>Hey! How’s it going?</p>
+          <div>
+            {!messages ? (
+              <div></div>
+            ) : (
+              <div className="flex-grow overflow-y-auto m-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={message._id}
+                    className={`flex ${
+                      message.sender._id === user
+                        ? "justify-end"
+                        : "justify-start"
+                    } mb-4`}
+                  >
+                    {/* Profile Picture */}
+                    {message.sender._id !== user && (
+                      <img
+                        src={message.sender.profilePic} // Sender's profile pic
+                        alt="User"
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                    )}
+
+                    {/* Message Content and Timestamp */}
+                    <div
+                      className={`flex items-start ${
+                        message.sender._id === user._id
+                          ? "bg-blue-500 text-white ml-auto"
+                          : "bg-gray-100 text-black"
+                      } p-4 rounded-lg max-w-md mb-2 shadow-md hover:shadow-lg transition-all duration-300`}
+                    >
+                      <div className="flex flex-col">
+                        <p className="text-lg">{message.content}</p>
+                        <span className="text-xs text-gray-400 mt-1">
+                          {new Date(message.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* If the current user is sending the message, show their profile pic on the right */}
+                    {message.sender._id === user && (
+                      <img
+                        src={message.sender.profilePic} // Current user's profile pic
+                        alt="You"
+                        className="w-10 h-10 rounded-full ml-3"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="flex justify-end mb-4">
-              <div className="bg-blue-500 text-white p-3 rounded-lg max-w-md">
-                <p>I'm doing great! What about you?</p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Input field */}
@@ -99,8 +187,13 @@ const ChatField = () => {
               type="text"
               className="w-full p-2 border border-gray-300 rounded-lg"
               placeholder="Type your message..."
+              value={inputField}
+              onChange={(e) => setInputField(e.target.value)}
             />
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              onClick={handleSendMessage}
+            >
               Send
             </button>
           </div>

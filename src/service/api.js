@@ -17,4 +17,7 @@ export const userEndPoints = {
 
 export const chatEndPoints = {
   FETCH_ALL_CHATS: BASE_URL + "/chat/fetchAllChats",
+  FETCH_CHAT_DETAILS: BASE_URL + "/chat/fetchChatDetails",
+  SEND_MESSAGE_API: BASE_URL + "/chat/sendMessage",
+  FETCH_MESSAGE_API: BASE_URL + "/chat/getMessages",
 };
