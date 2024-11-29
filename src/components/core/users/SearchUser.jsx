@@ -65,7 +65,10 @@ const searchUser = () => {
             />
 
             {/* User List */}
-            <FraindRequestComponent allUsers={allUsers} />
+            <FraindRequestComponent
+              allUsers={allUsers}
+              setAllUser={setAllUser}
+            />
           </div>
         </div>
       )}

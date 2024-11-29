@@ -6,6 +6,7 @@ const {
   FETCH_CHAT_DETAILS,
   SEND_MESSAGE_API,
   FETCH_MESSAGE_API,
+  UPDATE_MESSAGE_READ_STATUS_API,
 } = chatEndPoints;
 
 export const fetchAllChatHandler = async () => {
@@ -81,4 +82,19 @@ export const fetchMessageHandler = async (data) => {
     console.log("error occured in fetching message", err);
   }
   return result;
+};
+
+export const updateMessageReadStatusHandler = async (data) => {
+  try {
+    const response = await axios({
+      url: UPDATE_MESSAGE_READ_STATUS_API,
+      method: "POST",
+      data: { chatId: data },
+      withCredentials: true,
+    });
+
+    console.log(response, "updating message resposnse");
+  } catch (err) {
+    console.log("erroro occuring in updating message status", err);
+  }
 };

@@ -1,53 +1,74 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { sendFraindRequestHandler } from "../../../service/operation/user";
+import {
+  searchUserHandler,
+  sendFraindRequestHandler,
+} from "../../../service/operation/user";
 
-const FraindRequestComponent = ({ allUsers }) => {
+const FriendRequestComponent = ({ allUsers, setAllUser }) => {
   const [loadingUserId, setLoadingUserId] = useState(null);
-  const dispatch = useDispatch();
 
-  const sendFraindRequstToUser = async (userId) => {
+  const sendFriendRequestToUser = async (userId) => {
     setLoadingUserId(userId);
-    await sendFraindRequestHandler(userId, dispatch);
+    await sendFraindRequestHandler(userId);
     setLoadingUserId(null);
+    const updatedUser = await searchUserHandler("");
+    if (updatedUser) {
+      setAllUser(updatedUser.users);
+    }
   };
 
   return (
-    <ul className="mt-4 max-h-[70vh] hide-scrollbar overflow-y-auto">
-      {allUsers ? (
+    <ul className="mt-4 max-h-[70vh] overflow-y-auto hide-scrollbar">
+      {allUsers && allUsers.length > 0 ? (
         allUsers.map((user) => (
           <li
             key={user._id}
-            className="p-2 border-b border-gray-200 hover:bg-gray-100 flex items-center justify-between"
+            className="p-4 border-b border-gray-300 flex items-center justify-between hover:bg-gray-50 transition"
           >
-            {/* User Info Section */}
-            <div className="flex items-center gap-3">
+            {/* User Info */}
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               <img
                 src={user.profilePic || "/placeholder.png"}
-                alt={`${user.name} profile`}
-                className="w-10 h-10 rounded-full object-cover"
+                alt={`${user.name}'s profile`}
+                className="w-12 h-12 rounded-full object-cover"
               />
-              <div>
-                <p className="font-semibold text-gray-700">{user.name}</p>
-                <p className="text-sm text-gray-500">{user.username}</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-800 truncate max-w-[150px]">
+                  {user.name}
+                </p>
+                <p className="text-sm text-gray-500 truncate max-w-[150px]">
+                  @{user.username}
+                </p>
               </div>
             </div>
 
-            {/* Send Request Button */}
+            {/* Friend Request Button */}
             <button
-              onClick={() => sendFraindRequstToUser(user._id)}
-              className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200"
-              disabled={loadingUserId === user._id} // Disable button if loading
+              onClick={() => sendFriendRequestToUser(user._id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap 
+                ${
+                  loadingUserId === user._id
+                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                    : user.request
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-blue-500 text-white hover:bg-blue-600"
+                }`}
+              disabled={loadingUserId === user._id || user.request}
             >
-              {loadingUserId === user._id ? "Loading..." : "Send Request"}
+              {loadingUserId === user._id
+                ? "Sending..."
+                : user.request
+                ? "Request Sent"
+                : "Send Request"}
             </button>
           </li>
         ))
       ) : (
-        <li className="text-center text-gray-500 mt-4">No users found</li>
+        <li className="text-center text-gray-500 py-4">No users found</li>
       )}
     </ul>
   );
 };
 
-export default FraindRequestComponent;
+export default FriendRequestComponent;

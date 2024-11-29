@@ -20,4 +20,5 @@ export const chatEndPoints = {
   FETCH_CHAT_DETAILS: BASE_URL + "/chat/fetchChatDetails",
   SEND_MESSAGE_API: BASE_URL + "/chat/sendMessage",
   FETCH_MESSAGE_API: BASE_URL + "/chat/getMessages",
+  UPDATE_MESSAGE_READ_STATUS_API: BASE_URL + "/chat/updateMessageStatus",
 };
