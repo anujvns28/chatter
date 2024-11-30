@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from "react";
 import Sidebar from "../components/common/Sidebar";
 import Chats from "../components/common/Chats";
 import ChatField from "../components/common/ChatField";
@@ -6,10 +6,32 @@ import { IoSearch } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
 import SearchUser from "../components/core/users/SearchUser";
 import FriendRequestNotification from "../components/core/notification/FriendRequestNotification";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import useSocketConnection from "../hooks/socket";
+import { fetchAllRequestHandler } from "../service/operation/user";
+import { setNotifactionCount } from "../slice/chatSlice";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const { showNotifaction } = useSelector((state) => state.chat);
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  // socket connection
+  useSocketConnection();
+
+  // set notification count
+  const notifactionCountHandler = async () => {
+    const result = await fetchAllRequestHandler();
+    if (result) {
+      dispatch(setNotifactionCount(result.requests.length));
+    }
+  };
+
+  useEffect(() => {
+    notifactionCountHandler();
+  }, []);
+
   return (
     <div className="h-screen w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
       {/* Search box only for phones */}
@@ -62,4 +84,4 @@ const Home = () => {
   );
 };
 
-export default Home
+export default Home;

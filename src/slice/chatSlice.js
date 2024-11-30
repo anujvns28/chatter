@@ -5,6 +5,7 @@ const initialState = {
   searchUsers: false,
   userLoading: false,
   showNotifaction: false,
+  notificationCaount: 0,
 };
 
 export const chatSlice = createSlice({
@@ -23,6 +24,9 @@ export const chatSlice = createSlice({
     setShowNotification(state, value) {
       state.showNotifaction = value.payload;
     },
+    setNotifactionCount(state, value) {
+      state.notificationCaount = value.payload;
+    },
   },
 });
 
@@ -32,6 +36,7 @@ export const {
   setOpenSearchBox,
   setUserLoading,
   setShowNotification,
+  setNotifactionCount,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

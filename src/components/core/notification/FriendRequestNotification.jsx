@@ -1,19 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowNotification } from "../../../slice/chatSlice";
+import {
+  setNotifactionCount,
+  setShowNotification,
+} from "../../../slice/chatSlice";
 import {
   fetchAllRequestHandler,
   respondToFraindRequestHandler,
 } from "../../../service/operation/user";
+import useSocketConnection from "../../../hooks/socket";
 
 const FriendRequestNotification = () => {
   const modalRef = useRef();
   const dispatch = useDispatch();
-
   const { showNotifaction } = useSelector((state) => state.chat);
-
   const [friendRequests, setFriendRequests] = useState(null);
 
+  const socket = useSocketConnection();
+  socket.on("fraindRequest", (data) => {
+    console.log(data);
+  });
   const handleOutSideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       dispatch(setShowNotification(false));
@@ -33,6 +39,7 @@ const FriendRequestNotification = () => {
 
     if (result) {
       setFriendRequests(result.requests);
+      dispatch(setNotifactionCount(result.requests.length));
     }
   };
 

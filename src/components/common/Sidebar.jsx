@@ -11,7 +11,10 @@ import { setOpenSearchBox, setShowNotification } from "../../slice/chatSlice";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
+  const { notificationCaount } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
+
+  console.log(notificationCaount, "this is count");
 
   return (
     <div className="flex md:flex-col flex-row-reverse justify-between py-4 border md:h-full h-[50px] min-w-[80px] rounded-xl border-black md:w-[8%] w-full bg-blue-600 ">
@@ -42,8 +45,16 @@ const Sidebar = () => {
         >
           <IoSearch />
         </p>
-        <p onClick={() => dispatch(setShowNotification(true))}>
+        <p
+          className="relative"
+          onClick={() => dispatch(setShowNotification(true))}
+        >
           <MdOutlineNotifications />
+          {notificationCaount > 0 && (
+            <span className="absolute -top-2 left-4 bg-red-500 p-[2px] px-2 rounded-full text-sm text-white font-bold ">
+              {notificationCaount}
+            </span>
+          )}
         </p>
         <p className="hidden md:flex">
           <IoMdSettings />
