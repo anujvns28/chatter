@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { fetchAllChatHandler } from "../../service/operation/chat";
 import ChatComponent from "../core/chat/ChatComponent";
+import useSocketConnection from "../../hooks/socket";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const Chats = () => {
   const [chatList, setChatList] = useState(null);
+  const { notificationCaount } = useSelector((state) => state.chat);
+
+  const socket = useSocketConnection();
 
   const fetchAllChats = async () => {
     const data = await fetchAllChatHandler();
@@ -12,9 +18,14 @@ const Chats = () => {
 
   useEffect(() => {
     fetchAllChats();
-  }, []);
+  }, [notificationCaount]);
 
-  console.log("calling", chatList);
+  if (socket && !socket.hasListeners("acceptRequest")) {
+    socket.on("acceptRequest", () => {
+      toast.success("Request Accepted");
+      fetchAllChats();
+    });
+  }
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -33,3 +44,4 @@ const Chats = () => {
 };
 
 export default Chats;
+ 

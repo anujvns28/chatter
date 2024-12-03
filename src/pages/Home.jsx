@@ -13,16 +13,18 @@ import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
 
 const Home = () => {
-  const { showNotifaction } = useSelector((state) => state.chat);
+  const { showNotifaction, notificationCaount } = useSelector(
+    (state) => state.chat
+  );
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   // socket connection
-  useSocketConnection();
+  const socket = useSocketConnection();
 
   // set notification count
   const notifactionCountHandler = async () => {
-    const result = await fetchAllRequestHandler();
+    const result = await fetchAllRequestHandler(false);
     if (result) {
       dispatch(setNotifactionCount(result.requests.length));
     }
@@ -31,6 +33,21 @@ const Home = () => {
   useEffect(() => {
     notifactionCountHandler();
   }, []);
+
+  // gettting real time fraind request
+  useEffect(() => {
+    const handleRequestMessage = () => {
+      toast.success("New Fraind Request");
+      const nom = notificationCaount + 1;
+      dispatch(setNotifactionCount(nom));
+    };
+
+    socket.on("fraindRequest", handleRequestMessage);
+
+    return () => {
+      socket.off("fraindRequest", handleRequestMessage);
+    };
+  }, [socket]);
 
   return (
     <div className="h-screen w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
@@ -68,7 +85,7 @@ const Home = () => {
         <div className="flex h-full flex-row md:gap-6 sm:gap-6 gap-3 w-full">
           {/* chats */}
           <div className="sm:w-[40%] w-full">
-            <Chats />
+            <Chats socket={socket} />
           </div>
 
           {/* chat field */}

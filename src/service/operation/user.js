@@ -69,12 +69,13 @@ export const respondToFraindRequestHandler = async (data) => {
   return result;
 };
 
-export const fetchAllRequestHandler = async () => {
+export const fetchAllRequestHandler = async (isRead) => {
   let result;
   try {
     const data = await axios({
       url: FETCH_ALL_REQUEST_API,
-      method: "GET",
+      method: "POST",
+      data: { isRead: isRead },
       withCredentials: true,
     });
 
