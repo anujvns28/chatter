@@ -26,7 +26,23 @@ const Home = () => {
   const notifactionCountHandler = async () => {
     const result = await fetchAllRequestHandler(false);
     if (result) {
-      dispatch(setNotifactionCount(result.requests.length));
+      const requests = result.requests
+        .map((request) => {
+          if (
+            request.status == "accepted" &&
+            request.sender._id === user._id &&
+            !request.isRead
+          ) {
+            return request;
+          } else if (request.status == "pending") {
+            return request;
+          } else {
+            return null;
+          }
+        })
+        .filter((request) => request != null);
+
+      dispatch(setNotifactionCount(requests.length));
     }
   };
 

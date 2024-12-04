@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { fetchAllChatHandler } from "../../service/operation/chat";
 import ChatComponent from "../core/chat/ChatComponent";
 import useSocketConnection from "../../hooks/socket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { setNotifactionCount } from "../../slice/chatSlice";
 
 const Chats = () => {
   const [chatList, setChatList] = useState(null);
   const { notificationCaount } = useSelector((state) => state.chat);
+  const dispatch = useDispatch();
 
   const socket = useSocketConnection();
 
@@ -23,6 +25,8 @@ const Chats = () => {
   if (socket && !socket.hasListeners("acceptRequest")) {
     socket.on("acceptRequest", () => {
       toast.success("Request Accepted");
+      const nom = notificationCaount + 1;
+      dispatch(setNotifactionCount(nom));
       fetchAllChats();
     });
   }

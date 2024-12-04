@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setCurrentChat,
   setNotifactionCount,
   setShowNotification,
 } from "../../../slice/chatSlice";
@@ -15,6 +16,7 @@ const FriendRequestNotification = () => {
   const modalRef = useRef();
   const dispatch = useDispatch();
   const { showNotifaction } = useSelector((state) => state.chat);
+  const { user } = useSelector((state) => state.auth);
   const [friendRequests, setFriendRequests] = useState(null);
 
   const handleOutSideClick = (event) => {
@@ -36,27 +38,45 @@ const FriendRequestNotification = () => {
     const result = await fetchAllRequestHandler(data);
 
     if (result) {
-      setFriendRequests(result.requests);
-      dispatch(setNotifactionCount(result.requests.length));
+      const requests = result.requests
+        .map((request) => {
+          if (
+            request.status == "accepted" &&
+            request.sender._id === user._id &&
+            !request.isRead
+          ) {
+            return request;
+          } else if (request.status == "pending") {
+            return request;
+          } else {
+            return null;
+          }
+        })
+        .filter((request) => request != null);
+
+      if (requests) {
+        setFriendRequests(requests);
+        dispatch(setNotifactionCount(requests.length));
+      }
     }
   };
 
   const handleAccept = async (id) => {
     await respondToFraindRequestHandler({ requestId: id, action: "accept" });
     fetchFraindRequests(false);
-    toast.success("Friend request accepted!");
   };
 
   const handleDecline = async (id) => {
     await respondToFraindRequestHandler({ requestId: id, action: "reject" });
     fetchFraindRequests(false);
-    toast.error("Friend request rejected.");
   };
 
   const handleCloseButton = () => {
     fetchFraindRequests(true);
     dispatch(setShowNotification(false));
   };
+
+  console.log(friendRequests, "is this true");
 
   useEffect(() => {
     fetchFraindRequests(false);
@@ -82,16 +102,29 @@ const FriendRequestNotification = () => {
                 {/* User Info */}
                 <div className="flex items-center gap-3">
                   <img
-                    src={request.sender.profilePic || "/placeholder.png"}
-                    alt={`${request.sender.name} profile`}
+                    src={
+                      request.status == "pending"
+                        ? request.sender.profilePic
+                        : request.receiver.profilePic || "/placeholder.png"
+                    }
+                    alt={`${
+                      request.status == "pending"
+                        ? request.sender.name
+                        : request.receiver.name
+                    } profile`}
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-medium text-gray-800">
-                      {request.sender.name}
+                      {request.status == "pending"
+                        ? request.sender.name
+                        : request.receiver.name}
                     </p>
                     <p className="text-sm text-gray-500">
-                      @{request.sender.username}
+                      @
+                      {request.status == "pending"
+                        ? request.sender.username
+                        : request.receiver.username}
                     </p>
                   </div>
                 </div>
@@ -99,7 +132,7 @@ const FriendRequestNotification = () => {
                 {/* Actions: Accept / Decline */}
                 <div className="flex gap-2">
                   {request.status === "pending" ? (
-                    <>
+                    <div>
                       <button
                         onClick={() => handleAccept(request._id)}
                         className="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-200"
@@ -112,20 +145,12 @@ const FriendRequestNotification = () => {
                       >
                         Decline
                       </button>
-                    </>
-                  ) : request.status === "accepted" && !request.isRead ? (
-                    // Show "New Friend Request" for accepted but unread requests
-                    <div className="text-sm text-blue-600">
-                      <p className="font-semibold">New Friend Request</p>
-                      <button
-                        onClick={() => handleAccept(request._id)}
-                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200"
-                      >
-                        Open Chat
-                      </button>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500">Request Accepted</p>
+                    // Show "New Friend Request" for accepted but unread requests
+                    <div className="text-sm text-blue-600">
+                      <p className="font-semibold">Friend Request Accepted</p>
+                    </div>
                   )}
                 </div>
               </li>
