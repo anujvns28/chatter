@@ -46,7 +46,7 @@ const FriendRequestNotification = () => {
             !request.isRead
           ) {
             return request;
-          } else if (request.status == "pending") {
+          } else if (request.status == "pending" && request.receiver._id == user._id) {
             return request;
           } else {
             return null;
@@ -57,6 +57,10 @@ const FriendRequestNotification = () => {
       if (requests) {
         setFriendRequests(requests);
         dispatch(setNotifactionCount(requests.length));
+      }
+
+      if (data) {
+        console.log(requests, "this is after close button");
       }
     }
   };

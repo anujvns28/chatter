@@ -20,7 +20,6 @@ export const fetchAllChatHandler = async () => {
 
     if (response) {
       result = response.data;
-      console.log(result, "this is chat response");
     }
   } catch (err) {
     console.log("error occured in fetching all chat", err);
@@ -49,6 +48,7 @@ export const fetchChatDetailsHandler = async (data) => {
 };
 
 export const sendMessageHandler = async (data) => {
+  let result;
   try {
     const response = await axios({
       url: SEND_MESSAGE_API,
@@ -57,10 +57,13 @@ export const sendMessageHandler = async (data) => {
       withCredentials: true,
     });
 
-    console.log(response.data, "message send response");
+    if (response) {
+      result = response.data;
+    }
   } catch (err) {
     console.log("error occured in seding message", err);
   }
+  return result;
 };
 
 export const fetchMessageHandler = async (data) => {
@@ -76,8 +79,6 @@ export const fetchMessageHandler = async (data) => {
     if (response) {
       result = response.data;
     }
-
-    console.log(response.data, "message fetching response");
   } catch (err) {
     console.log("error occured in fetching message", err);
   }

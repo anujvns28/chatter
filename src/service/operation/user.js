@@ -61,7 +61,6 @@ export const respondToFraindRequestHandler = async (data) => {
 
     if (response) {
       result = response.data;
-      console.log(response, "Respond to fraind request");
     }
   } catch (error) {
     console.log("error occured in Responding to fraind request api", error);
@@ -81,7 +80,6 @@ export const fetchAllRequestHandler = async (isRead) => {
 
     if (data) {
       result = data.data;
-      console.log(result, "fetching request response");
     }
   } catch (err) {
     conosle.log("error occured in fetching all request");

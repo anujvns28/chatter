@@ -34,7 +34,7 @@ const Home = () => {
             !request.isRead
           ) {
             return request;
-          } else if (request.status == "pending") {
+          } else if (request.status == "pending" && request.receiver._id == user._id) {
             return request;
           } else {
             return null;

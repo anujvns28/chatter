@@ -28,10 +28,18 @@ const ChatField = () => {
   };
 
   const handleSendMessage = async () => {
+    if (!inputField.trim()) return;
+
     const data = { content: inputField, chatId: chatDetails._id };
-    await sendMessageHandler(data);
+    const newMessage = await sendMessageHandler(data);
+    if (newMessage) {
+      const response = newMessage.message;
+      response.sender = user;
+      console.log(response);
+      setMessages((prevMessage) => [...prevMessage, response]);
+    }
+
     setInputField("");
-    handleFetchingMessages();
   };
 
   const handleFetchingMessages = async () => {
@@ -56,6 +64,8 @@ const ChatField = () => {
     fetchCurrentChat();
     handleFetchingMessages();
   }, [currentChat]);
+
+  console.log(messages, "this is messages");
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
@@ -112,50 +122,62 @@ const ChatField = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 ">
+          <div className="flex-grow overflow-y-auto hide-scrollbar p-4">
             {messages?.length ? (
               messages.map((message, index) => (
-                <div
-                  key={message._id}
-                  className={`flex ${
-                    message.sender._id === user._id
-                      ? "justify-end"
-                      : "justify-start"
-                  } mb-4`}
-                >
-                  {message.sender._id !== user._id && (
-                    <img
-                      src={message.sender.profilePic}
-                      alt="User"
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
-                  )}
-                  <div
-                    className={`p-3 rounded-lg max-w-md shadow-md ${
-                      message.sender._id === user._id
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-100 text-black"
-                    }`}
-                  >
-                    <p>{message.content}</p>
-
-                    <div className="flex justify-between items-center">
-                      {/* Timestamp */}
-                      <span className="text-xs text-gray-400">
-                        {new Date(message.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-
-                      {/* Read Status */}
-                      {message.sender._id === user._id && (
-                        <span className="text-xs text-gray-400 ml-2">
-                          {message.isRead ? "Seen" : "Delivered"}
-                        </span>
-                      )}
+                <div key={message._id}>
+                  {message.isNotification ? (
+                    <div className="flex justify-center mb-4">
+                      <div className="bg-yellow-100 text-yellow-800 p-3 rounded-lg shadow-md text-center max-w-lg">
+                        <p>{message.content}</p>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div
+                      className={`flex ${
+                        message.sender._id === user._id
+                          ? "justify-end"
+                          : "justify-start"
+                      } mb-2`}
+                    >
+                      {message.sender._id !== user._id && message.sender && (
+                        <img
+                          src={message.sender.profilePic}
+                          alt="User"
+                          className="w-10 h-10 rounded-full mr-3"
+                        />
+                      )}
+                      <div
+                        className={`p-3 rounded-lg max-w-md shadow-md ${
+                          message.sender._id === user._id
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-100 text-black"
+                        }`}
+                      >
+                        <p>{message.content}</p>
+
+                        <div className="flex justify-between items-center">
+                          {/* Timestamp */}
+                          <span className="text-xs text-gray-400">
+                            {new Date(message.createdAt).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </span>
+
+                          {/* Read Status */}
+                          {message.sender._id === user._id && (
+                            <span className="text-xs text-gray-400 ml-2">
+                              {message.isRead ? "Seen" : "Delivered"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
