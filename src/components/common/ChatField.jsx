@@ -10,6 +10,7 @@ import {
   sendMessageHandler,
   updateMessageReadStatusHandler,
 } from "../../service/operation/chat";
+import useSocketConnection from "../../hooks/socket";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
@@ -19,6 +20,7 @@ const ChatField = () => {
   const [messages, setMessages] = useState(null);
   const dispatch = useDispatch();
   const chatEndRef = useRef();
+  const socket = useSocketConnection();
 
   const fetchCurrentChat = async () => {
     if (currentChat) {
@@ -35,7 +37,7 @@ const ChatField = () => {
     if (newMessage) {
       const response = newMessage.message;
       response.sender = user;
-      console.log(response);
+
       setMessages((prevMessage) => [...prevMessage, response]);
     }
 
@@ -48,6 +50,50 @@ const ChatField = () => {
       if (result) setMessages(result.messages);
     }
   };
+
+  // get realtime messages
+  useEffect(() => {
+    if (socket) {
+      socket.on("sendMessage", async (data) => {
+        console.log("getting rt message", data);
+        setMessages((prev) => [...prev, data]);
+        await updateMessageReadStatusHandler(currentChat);
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("sendMessage");
+      }
+    };
+  });
+
+  // update message read status in real time
+  useEffect(() => {
+    if (socket) {
+      socket.on("messageRead", (data) => {
+        setMessages((prevMessages) => {
+          // Create a Set for faster lookup of messageIds
+          const updatedMessageIds = new Set(data.messageIds);
+
+          // Map over previous messages and update isRead for matching IDs
+          const updatedMessages = prevMessages.map((message) =>
+            updatedMessageIds.has(message._id)
+              ? { ...message, isRead: true }
+              : message
+          );
+
+          return updatedMessages;
+        });
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("messageRead");
+      }
+    };
+  }, []);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -64,8 +110,6 @@ const ChatField = () => {
     fetchCurrentChat();
     handleFetchingMessages();
   }, [currentChat]);
-
-  console.log(messages, "this is messages");
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
