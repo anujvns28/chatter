@@ -22,6 +22,7 @@ const ChatField = () => {
   const chatEndRef = useRef();
   const socket = useSocketConnection();
 
+  // fetching curret chat detils
   const fetchCurrentChat = async () => {
     if (currentChat) {
       const result = await fetchChatDetailsHandler(currentChat);
@@ -29,6 +30,20 @@ const ChatField = () => {
     }
   };
 
+  // fetching current chat messagess
+  const handleFetchingMessages = async () => {
+    if (currentChat) {
+      const result = await fetchMessageHandler(currentChat);
+      if (result) setMessages(result.messages);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentChat();
+    handleFetchingMessages();
+  }, [currentChat]);
+
+  // sending message to user
   const handleSendMessage = async () => {
     if (!inputField.trim()) return;
 
@@ -44,20 +59,12 @@ const ChatField = () => {
     setInputField("");
   };
 
-  const handleFetchingMessages = async () => {
-    if (currentChat) {
-      const result = await fetchMessageHandler(currentChat);
-      if (result) setMessages(result.messages);
-    }
-  };
-
   // get realtime messages
   useEffect(() => {
     if (socket) {
       socket.on("sendMessage", async (data) => {
-        console.log("getting rt message", data);
         setMessages((prev) => [...prev, data]);
-        await updateMessageReadStatusHandler(currentChat);
+        // await updateMessageReadStatusHandler(currentChat);
       });
     }
 
@@ -72,6 +79,7 @@ const ChatField = () => {
   useEffect(() => {
     if (socket) {
       socket.on("messageRead", (data) => {
+        console.log(data, "thsi is messaeREad");
         setMessages((prevMessages) => {
           // Create a Set for faster lookup of messageIds
           const updatedMessageIds = new Set(data.messageIds);
@@ -82,6 +90,8 @@ const ChatField = () => {
               ? { ...message, isRead: true }
               : message
           );
+
+          console.log(updatedMessages, "this is updated message");
 
           return updatedMessages;
         });
@@ -100,16 +110,15 @@ const ChatField = () => {
     const scrollAndMarkMessagesAsRead = async () => {
       if (chatEndRef.current) {
         chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-        await updateMessageReadStatusHandler(currentChat);
+      }
+      // Only update read status if there are unread messages;
+      if (messages?.some((msg) => !msg.isRead)) {
+        console.log("comming///");
+        // await updateMessageReadStatusHandler(currentChat);
       }
     };
     scrollAndMarkMessagesAsRead();
   }, [messages]);
-
-  useEffect(() => {
-    fetchCurrentChat();
-    handleFetchingMessages();
-  }, [currentChat]);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
