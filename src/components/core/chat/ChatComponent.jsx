@@ -1,15 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentChat } from "../../../slice/chatSlice";
 import useFormattedTimestamp from "../../../hooks/timestamp";
 
-const ChatComponent = ({ chat }) => {
+const ChatComponent = ({ chat, setChatList }) => {
   const dispatch = useDispatch();
   const { currentChat } = useSelector((state) => state.chat);
 
   const handleChatClick = () => {
     dispatch(setCurrentChat(chat._id));
   };
+
+  useEffect(() => {
+    // Update unread message count to 0 when chat is selected
+    if (currentChat === chat._id) {
+      setChatList((prev) => {
+        return prev.map((prevChat) =>
+          prevChat._id === chat._id
+            ? { ...prevChat, unReadMessageCount: 0 }
+            : prevChat
+        );
+      });
+    }
+  }, [currentChat]);
 
   return (
     <div
@@ -42,9 +55,9 @@ const ChatComponent = ({ chat }) => {
         </span>
 
         {/* Notification Badge */}
-        {false && (
+        {chat.unReadMessageCount > 0 && (
           <div className="flex items-center justify-center h-6 w-6 rounded-full bg-red-500 text-white text-xs font-bold">
-            5
+            {chat.unReadMessageCount}
           </div>
         )}
       </div>

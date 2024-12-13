@@ -13,9 +13,10 @@ import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
 
 const Home = () => {
-  const { showNotifaction, notificationCaount } = useSelector(
+  const { showNotifaction, notificationCaount, searchUsers } = useSelector(
     (state) => state.chat
   );
+
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -34,7 +35,10 @@ const Home = () => {
             !request.isRead
           ) {
             return request;
-          } else if (request.status == "pending" && request.receiver._id == user._id) {
+          } else if (
+            request.status == "pending" &&
+            request.receiver._id == user._id
+          ) {
             return request;
           } else {
             return null;
@@ -110,7 +114,7 @@ const Home = () => {
           </div>
         </div>
 
-        <SearchUser />
+        {searchUsers && <SearchUser />}
         {showNotifaction && <FriendRequestNotification />}
       </div>
     </div>

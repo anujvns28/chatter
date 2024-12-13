@@ -34,7 +34,18 @@ const ChatField = () => {
   const handleFetchingMessages = async () => {
     if (currentChat) {
       const result = await fetchMessageHandler(currentChat);
-      if (result) setMessages(result.messages);
+      if (result) {
+        setMessages(result.messages);
+        // Find unread messages
+        const unreadMessages = result.messages.filter(
+          (message) => !message.isRead && message.sender._id !== user._id
+        );
+
+        // Update unread message status
+        if (unreadMessages.length) {
+          await updateMessageReadStatusHandler(currentChat);
+        }
+      }
     }
   };
 
@@ -63,8 +74,12 @@ const ChatField = () => {
   useEffect(() => {
     if (socket) {
       socket.on("sendMessage", async (data) => {
-        setMessages((prev) => [...prev, data]);
-        // await updateMessageReadStatusHandler(currentChat);
+        console.log(data, "socket data");
+        if (data.chat === currentChat) {
+          setMessages((prev) => [...prev, data]);
+          await updateMessageReadStatusHandler(currentChat);
+          console.log("getting in real time");
+        }
       });
     }
 
@@ -73,7 +88,7 @@ const ChatField = () => {
         socket.off("sendMessage");
       }
     };
-  });
+  }, [socket, currentChat]);
 
   // update message read status in real time
   useEffect(() => {
@@ -90,9 +105,6 @@ const ChatField = () => {
               ? { ...message, isRead: true }
               : message
           );
-
-          console.log(updatedMessages, "this is updated message");
-
           return updatedMessages;
         });
       });
@@ -110,11 +122,6 @@ const ChatField = () => {
     const scrollAndMarkMessagesAsRead = async () => {
       if (chatEndRef.current) {
         chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      // Only update read status if there are unread messages;
-      if (messages?.some((msg) => !msg.isRead)) {
-        console.log("comming///");
-        // await updateMessageReadStatusHandler(currentChat);
       }
     };
     scrollAndMarkMessagesAsRead();

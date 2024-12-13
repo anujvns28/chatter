@@ -6,6 +6,7 @@ const initialState = {
   userLoading: false,
   showNotifaction: false,
   notificationCaount: 0,
+  unReadMessagess: 4,
 };
 
 export const chatSlice = createSlice({
@@ -27,6 +28,9 @@ export const chatSlice = createSlice({
     setNotifactionCount(state, value) {
       state.notificationCaount = value.payload;
     },
+    setUnReadMessagessCount(state, value) {
+      state.unReadMessagess = value.payload;
+    },
   },
 });
 
@@ -37,6 +41,7 @@ export const {
   setUserLoading,
   setShowNotification,
   setNotifactionCount,
+  setUnReadMessagessCount,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
