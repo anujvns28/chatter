@@ -38,7 +38,7 @@ const ChatField = () => {
         setMessages(result.messages);
         // Find unread messages
         const unreadMessages = result.messages.filter(
-          (message) => !message.isRead && message.sender._id !== user._id
+          (message) => !message.isRead && message.sender !== user._id
         );
 
         // Update unread message status
