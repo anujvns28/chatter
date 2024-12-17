@@ -27,4 +27,9 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none; /* For Chrome, Safari, and Edge */
   }
+
+  .chat-container {
+    max-height: 75vh;  /* Set a max height for the chat area */
+    overflow-y: auto;  /* Allow scrolling when the content exceeds the max height */
+  }
   

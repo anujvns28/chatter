@@ -13,6 +13,7 @@ export const userEndPoints = {
   SEND_FRIND_REQUEST_API: BASE_URL + "/user/sendFriendRequest",
   RESPOND_TO_FRAIND_REQUEST_API: BASE_URL + "/user/respondToFraindRequest",
   FETCH_ALL_REQUEST_API: BASE_URL + "/user/fetchAllFraindRequests",
+  UPDATE_USER_STATUS_API: BASE_URL + "/user/updateUserStatus",
 };
 
 export const chatEndPoints = {

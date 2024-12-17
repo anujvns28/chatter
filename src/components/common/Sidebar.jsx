@@ -40,7 +40,7 @@ const Sidebar = () => {
           <IoRadioButtonOn />
         </p>
         <p
-          className="hidden md:flex"
+          className="relative"
           onClick={() => dispatch(setOpenSearchBox(true))}
         >
           <IoSearch />

@@ -8,17 +8,22 @@ import SearchUser from "../components/core/users/SearchUser";
 import FriendRequestNotification from "../components/core/notification/FriendRequestNotification";
 import { useDispatch, useSelector } from "react-redux";
 import useSocketConnection from "../hooks/socket";
-import { fetchAllRequestHandler } from "../service/operation/user";
+import {
+  fetchAllRequestHandler,
+  updateUserStatusHandler,
+} from "../service/operation/user";
 import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
+import { useMediaQuery } from "react-responsive";
 
 const Home = () => {
-  const { showNotifaction, notificationCaount, searchUsers } = useSelector(
-    (state) => state.chat
-  );
+  const { showNotifaction, notificationCaount, searchUsers, currentChat } =
+    useSelector((state) => state.chat);
 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  // Check if the screen size is small (mobile)
+  const isSmallScreen = useMediaQuery({ maxWidth: 640 });
 
   // socket connection
   const socket = useSocketConnection();
@@ -69,6 +74,14 @@ const Home = () => {
     };
   }, [socket]);
 
+  /// update user Status to ONline
+  const updateUserStatus = async () => {
+    await updateUserStatusHandler(user._id);
+  };
+  useEffect(() => {
+    updateUserStatus();
+  }, []);
+
   return (
     <div className="h-screen w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
       {/* Search box only for phones */}
@@ -82,20 +95,6 @@ const Home = () => {
             <GiHamburgerMenu />
           </p>
         </div>
-
-        {/* Search Box for Small Screens */}
-        <div className="w-full block md:hidden mt-2">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full py-2 pl-10 pr-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
-            />
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-              <IoSearch className="text-gray-500" />
-            </span>
-          </div>
-        </div>
       </div>
 
       <div className="flex h-full  md:flex-row flex-col-reverse w-full md:gap-6 gap-2 pt-1">
@@ -104,9 +103,17 @@ const Home = () => {
 
         <div className="flex h-full flex-row md:gap-6 sm:gap-6 gap-3 w-full">
           {/* chats */}
-          <div className="sm:w-[40%] w-full">
-            <Chats socket={socket} />
-          </div>
+          {!isSmallScreen && (
+            <div className=" w-[40%]">
+              <Chats socket={socket} />
+            </div>
+          )}
+
+          {isSmallScreen && (
+            <div className="w-full h-full border border-blue-800">
+              {currentChat ? <ChatField /> : <Chats socket={socket} />}
+            </div>
+          )}
 
           {/* chat field */}
           <div className="w-full sm:flex hidden">

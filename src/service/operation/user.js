@@ -7,6 +7,7 @@ const {
   RESPOND_TO_FRAIND_REQUEST_API,
   SEND_FRIND_REQUEST_API,
   FETCH_ALL_REQUEST_API,
+  UPDATE_USER_STATUS_API,
 } = userEndPoints;
 
 export const searchUserHandler = async (username) => {
@@ -85,5 +86,27 @@ export const fetchAllRequestHandler = async (isRead) => {
     conosle.log("error occured in fetching all request");
   }
   return result;
+};
+
+export const updateUserStatusHandler = async (data) => {
+  try {
+    const apiData = {
+      status: "online",
+      userId: data,
+    };
+
+    const response = await axios({
+      method: "POST",
+      url: UPDATE_USER_STATUS_API,
+      data: apiData,
+      withCredentials: true,
+    });
+
+    if (response) {
+      console.log("status updated response", response);
+    }
+  } catch (err) {
+    console.log("error in updating user status ali", err);
+  }
 };
 

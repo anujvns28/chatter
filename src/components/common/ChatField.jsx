@@ -11,6 +11,7 @@ import {
   updateMessageReadStatusHandler,
 } from "../../service/operation/chat";
 import useSocketConnection from "../../hooks/socket";
+import useFormattedTimestamp from "../../hooks/timestamp";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
@@ -127,8 +128,24 @@ const ChatField = () => {
     scrollAndMarkMessagesAsRead();
   }, [messages]);
 
+  // update frainds status
+  useEffect(() => {
+    socket.on("status-update", () => {
+      fetchCurrentChat();
+      console.log("rt messagess updated", currentChat);
+    });
+
+    return () => {
+      if (socket) {
+        socket.off("status-update");
+      }
+    };
+  }, [socket, currentChat]);
+
+  ////// typing status showing
+
   return (
-    <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
+    <div className="flex  flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
       {!currentChat ? (
         <div className="flex flex-col items-center justify-center h-full text-center bg-gray-50">
           <img
@@ -170,7 +187,20 @@ const ChatField = () => {
                   {chatDetails?.users[0]?.name}
                 </h1>
                 <p className="text-xs">
-                  {chatDetails?.users[0]?.username} • Last seen, 02:20pm
+                  {chatDetails?.users[0]?.username} •{" "}
+                  {chatDetails?.users[0]?.status === "online" ? (
+                    "online"
+                  ) : (
+                    <span className="text-xs text-gray-400">
+                      Last Seen{" "}
+                      {new Date(
+                        chatDetails?.users[0]?.lastSeen
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
@@ -182,7 +212,7 @@ const ChatField = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto hide-scrollbar p-4">
+          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 ">
             {messages?.length ? (
               messages.map((message, index) => (
                 <div key={message._id}>
@@ -247,7 +277,7 @@ const ChatField = () => {
           </div>
 
           {/* Input Field */}
-          <div className="flex items-center p-4 bg-gray-100 border-t border-gray-300">
+          <div className="flex items-center sm:p-4 p-1 bg-gray-100 border-t border-gray-300">
             <input
               type="text"
               className="flex-1 p-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
