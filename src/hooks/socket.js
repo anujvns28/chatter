@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 // Create socket instance
-const socket = io("http://localhost:4000", {
+const socket = io("http://192.168.169.153:4000", {
   autoConnect: false, // Prevent auto connection
   reconnection: true,
 });

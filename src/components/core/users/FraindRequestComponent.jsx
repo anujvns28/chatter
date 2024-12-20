@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   searchUserHandler,
   sendFraindRequestHandler,
@@ -7,12 +7,13 @@ import {
 
 const FriendRequestComponent = ({ allUsers, setAllUser }) => {
   const [loadingUserId, setLoadingUserId] = useState(null);
+  const { token } = useSelector((state) => state.auth);
 
   const sendFriendRequestToUser = async (userId) => {
     setLoadingUserId(userId);
-    await sendFraindRequestHandler(userId);
+    await sendFraindRequestHandler(userId, token);
     setLoadingUserId(null);
-    const updatedUser = await searchUserHandler("");
+    const updatedUser = await searchUserHandler("", token);
     if (updatedUser) {
       setAllUser(updatedUser.users);
     }

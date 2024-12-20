@@ -3,9 +3,11 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
 
 function ProtectedRoute({ children }) {
-  const token = Cookies.get("token");
+  // const token = Cookies.get("token");
+  const { token } = useSelector((state) => state.auth);
   console.log(token, "is token");
   return token ? children : <Navigate to="/login" replace />;
 }

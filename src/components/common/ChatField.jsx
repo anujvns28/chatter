@@ -15,6 +15,7 @@ import useFormattedTimestamp from "../../hooks/timestamp";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
+  const { token } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.auth);
   const [chatDetails, setChatDetails] = useState(null);
   const [inputField, setInputField] = useState("");
@@ -26,7 +27,7 @@ const ChatField = () => {
   // fetching curret chat detils
   const fetchCurrentChat = async () => {
     if (currentChat) {
-      const result = await fetchChatDetailsHandler(currentChat);
+      const result = await fetchChatDetailsHandler(currentChat, token);
       if (result) setChatDetails(result.chatDetails);
     }
   };
@@ -34,7 +35,7 @@ const ChatField = () => {
   // fetching current chat messagess
   const handleFetchingMessages = async () => {
     if (currentChat) {
-      const result = await fetchMessageHandler(currentChat);
+      const result = await fetchMessageHandler(currentChat, token);
       if (result) {
         setMessages(result.messages);
         // Find unread messages
@@ -44,7 +45,7 @@ const ChatField = () => {
 
         // Update unread message status
         if (unreadMessages.length) {
-          await updateMessageReadStatusHandler(currentChat);
+          await updateMessageReadStatusHandler(currentChat, token);
         }
       }
     }
@@ -59,7 +60,7 @@ const ChatField = () => {
   const handleSendMessage = async () => {
     if (!inputField.trim()) return;
 
-    const data = { content: inputField, chatId: chatDetails._id };
+    const data = { content: inputField, chatId: chatDetails._id, token: token };
     const newMessage = await sendMessageHandler(data);
     if (newMessage) {
       const response = newMessage.message;
@@ -78,7 +79,7 @@ const ChatField = () => {
         console.log(data, "socket data");
         if (data.chat === currentChat) {
           setMessages((prev) => [...prev, data]);
-          await updateMessageReadStatusHandler(currentChat);
+          await updateMessageReadStatusHandler(currentChat, token);
           console.log("getting in real time");
         }
       });
@@ -101,11 +102,13 @@ const ChatField = () => {
           const updatedMessageIds = new Set(data.messageIds);
 
           // Map over previous messages and update isRead for matching IDs
-          const updatedMessages = prevMessages.map((message) =>
-            updatedMessageIds.has(message._id)
-              ? { ...message, isRead: true }
-              : message
-          );
+          const updatedMessages =
+            prevMessages &&
+            prevMessages.map((message) =>
+              updatedMessageIds.has(message._id)
+                ? { ...message, isRead: true }
+                : message
+            );
           return updatedMessages;
         });
       });
@@ -212,7 +215,7 @@ const ChatField = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 ">
+          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 chat-container">
             {messages?.length ? (
               messages.map((message, index) => (
                 <div key={message._id}>

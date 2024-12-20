@@ -9,12 +9,13 @@ const {
   UPDATE_MESSAGE_READ_STATUS_API,
 } = chatEndPoints;
 
-export const fetchAllChatHandler = async () => {
+export const fetchAllChatHandler = async (token) => {
   let result;
   try {
     const response = await axios({
       url: FETCH_ALL_CHATS,
-      method: "GET",
+      method: "POST",
+      data: { token: token },
       withCredentials: true,
     });
 
@@ -28,13 +29,13 @@ export const fetchAllChatHandler = async () => {
   return result;
 };
 
-export const fetchChatDetailsHandler = async (data) => {
+export const fetchChatDetailsHandler = async (data, token) => {
   let result;
   try {
     const response = await axios({
       url: FETCH_CHAT_DETAILS,
       method: "POST",
-      data: { chatId: data },
+      data: { chatId: data, token: token },
       withCredentials: true,
     });
 
@@ -67,13 +68,13 @@ export const sendMessageHandler = async (data) => {
   return result;
 };
 
-export const fetchMessageHandler = async (data) => {
+export const fetchMessageHandler = async (data, token) => {
   let result;
   try {
     const response = await axios({
       url: FETCH_MESSAGE_API,
       method: "POST",
-      data: { chatId: data },
+      data: { chatId: data, token },
       withCredentials: true,
     });
 
@@ -86,12 +87,12 @@ export const fetchMessageHandler = async (data) => {
   return result;
 };
 
-export const updateMessageReadStatusHandler = async (data) => {
+export const updateMessageReadStatusHandler = async (data, token) => {
   try {
     const response = await axios({
       url: UPDATE_MESSAGE_READ_STATUS_API,
       method: "POST",
-      data: { chatId: data },
+      data: { chatId: data, token },
       withCredentials: true,
     });
 

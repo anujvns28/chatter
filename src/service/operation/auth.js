@@ -1,6 +1,6 @@
 import axios from "axios";
 import { authEndPoints } from "../api";
-import { setAuthLoading, setUser } from "../../slice/authSlice";
+import { setAuthLoading, setToken, setUser } from "../../slice/authSlice";
 import Cookies from "js-cookie";
 
 const {
@@ -61,7 +61,9 @@ export const signup = async (data, dispatch, navigate) => {
 
     if (response) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("token", JSON.stringify(response.data.token));
       dispatch(setUser(response.data.user));
+      dispatch(setToken(response.data.token));
       window.location.href = "/";
     }
 
@@ -84,7 +86,9 @@ export const login = async (data, dispatch, navigate) => {
 
     if (response) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("token", JSON.stringify(response.data.token));
       dispatch(setUser(response.data.user));
+      dispatch(setToken(response.data.token));
       window.location.href = "/";
     }
 
@@ -107,6 +111,7 @@ export const logout = async (dispatch) => {
     if (response) {
       localStorage.clear();
       dispatch(setUser(null));
+      dispatch(setToken(null));
     }
 
     console.log("Logout response....", response);

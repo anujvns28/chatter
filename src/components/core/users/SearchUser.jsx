@@ -6,6 +6,7 @@ import FraindRequestComponent from "./FraindRequestComponent";
 
 const searchUser = () => {
   const { searchUsers, userLoading } = useSelector((state) => state.chat);
+  const { token } = useSelector((state) => state.auth);
   const searchMoadalRef = useRef();
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
@@ -33,7 +34,7 @@ const searchUser = () => {
   // debouce code started
   useEffect(() => {
     const timeout = setTimeout(async () => {
-      const result = await searchUserHandler(username);
+      const result = await searchUserHandler(username, token);
       if (result) {
         setAllUser(result.users);
       }

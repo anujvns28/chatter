@@ -11,6 +11,7 @@ import {
 } from "../../../service/operation/user";
 import useSocketConnection from "../../../hooks/socket";
 import { toast } from "react-toastify";
+import { GiThreePointedShuriken } from "react-icons/gi";
 
 const FriendRequestNotification = () => {
   const modalRef = useRef();
@@ -18,6 +19,7 @@ const FriendRequestNotification = () => {
   const { showNotifaction } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
   const [friendRequests, setFriendRequests] = useState(null);
+  const { token } = useSelector((state) => state.auth);
 
   const handleOutSideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -35,7 +37,7 @@ const FriendRequestNotification = () => {
   }, [showNotifaction]);
 
   const fetchFraindRequests = async (data) => {
-    const result = await fetchAllRequestHandler(data);
+    const result = await fetchAllRequestHandler(data, token);
 
     if (result) {
       const requests = result.requests
@@ -46,7 +48,10 @@ const FriendRequestNotification = () => {
             !request.isRead
           ) {
             return request;
-          } else if (request.status == "pending" && request.receiver._id == user._id) {
+          } else if (
+            request.status == "pending" &&
+            request.receiver._id == user._id
+          ) {
             return request;
           } else {
             return null;
@@ -58,20 +63,24 @@ const FriendRequestNotification = () => {
         setFriendRequests(requests);
         dispatch(setNotifactionCount(requests.length));
       }
-
-      if (data) {
-        console.log(requests, "this is after close button");
-      }
     }
   };
 
   const handleAccept = async (id) => {
-    await respondToFraindRequestHandler({ requestId: id, action: "accept" });
+    await respondToFraindRequestHandler({
+      requestId: id,
+      action: "accept",
+      token: token,
+    });
     fetchFraindRequests(false);
   };
 
   const handleDecline = async (id) => {
-    await respondToFraindRequestHandler({ requestId: id, action: "reject" });
+    await respondToFraindRequestHandler({
+      requestId: id,
+      action: "reject",
+      token: GiThreePointedShuriken,
+    });
     fetchFraindRequests(false);
   };
 

@@ -19,6 +19,7 @@ import { useMediaQuery } from "react-responsive";
 const Home = () => {
   const { showNotifaction, notificationCaount, searchUsers, currentChat } =
     useSelector((state) => state.chat);
+  const { token } = useSelector((state) => state.auth);
 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ const Home = () => {
 
   // set notification count
   const notifactionCountHandler = async () => {
-    const result = await fetchAllRequestHandler(false);
+    const result = await fetchAllRequestHandler(false, token);
     if (result) {
       const requests = result.requests
         .map((request) => {
@@ -76,7 +77,7 @@ const Home = () => {
 
   /// update user Status to ONline
   const updateUserStatus = async () => {
-    await updateUserStatusHandler(user._id);
+    await updateUserStatusHandler(user._id, token);
   };
   useEffect(() => {
     updateUserStatus();

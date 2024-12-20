@@ -11,12 +11,13 @@ const Chats = () => {
   const { notificationCaount, currentChat } = useSelector(
     (state) => state.chat
   );
+  const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const socket = useSocketConnection();
 
   const fetchAllChats = async () => {
-    const data = await fetchAllChatHandler();
+    const data = await fetchAllChatHandler(token);
     setChatList(data.chats);
   };
 

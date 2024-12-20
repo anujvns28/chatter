@@ -5,6 +5,9 @@ const initialState = {
     ? JSON.parse(localStorage.getItem("user"))
     : null,
   authLoading: false,
+  token: localStorage.getItem("token")
+    ? JSON.parse(localStorage.getItem("token"))
+    : null,
 };
 
 export const authSlice = createSlice({
@@ -17,10 +20,13 @@ export const authSlice = createSlice({
     setAuthLoading(state, value) {
       state.authLoading = value.payload;
     },
+    setToken(state, value) {
+      state.token = value.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUser, setAuthLoading } = authSlice.actions;
+export const { setUser, setAuthLoading, setToken } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -10,12 +10,13 @@ const {
   UPDATE_USER_STATUS_API,
 } = userEndPoints;
 
-export const searchUserHandler = async (username) => {
+export const searchUserHandler = async (username, token) => {
   let result;
   try {
     const response = await axios({
       method: "POST",
       url: SEARCH_USER_API + `?name=${username}`,
+      data: { token: token },
       withCredentials: true,
     });
 
@@ -29,13 +30,13 @@ export const searchUserHandler = async (username) => {
   return result;
 };
 
-export const sendFraindRequestHandler = async (data) => {
+export const sendFraindRequestHandler = async (data, token) => {
   let result;
   try {
     const response = await axios({
       method: "POST",
       url: SEND_FRIND_REQUEST_API,
-      data: { receiverId: data },
+      data: { receiverId: data, token },
       withCredentials: true,
     });
 
@@ -69,13 +70,13 @@ export const respondToFraindRequestHandler = async (data) => {
   return result;
 };
 
-export const fetchAllRequestHandler = async (isRead) => {
+export const fetchAllRequestHandler = async (isRead, token) => {
   let result;
   try {
     const data = await axios({
       url: FETCH_ALL_REQUEST_API,
       method: "POST",
-      data: { isRead: isRead },
+      data: { isRead: isRead, token: token },
       withCredentials: true,
     });
 
@@ -88,11 +89,12 @@ export const fetchAllRequestHandler = async (isRead) => {
   return result;
 };
 
-export const updateUserStatusHandler = async (data) => {
+export const updateUserStatusHandler = async (data, token) => {
   try {
     const apiData = {
       status: "online",
       userId: data,
+      token: token,
     };
 
     const response = await axios({
