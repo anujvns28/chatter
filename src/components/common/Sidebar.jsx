@@ -1,9 +1,9 @@
 import React from "react";
 import { FaUser } from "react-icons/fa6";
-import { IoRadioButtonOn } from "react-icons/io5";
 import { MdOutlineNotifications } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import { MdWbSunny } from "react-icons/md";
+import { FaPlus } from "react-icons/fa6";
 import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +37,7 @@ const Sidebar = () => {
           <IoHome />
         </p>
         <p>
-          <IoRadioButtonOn />
+          <FaPlus />
         </p>
         <p
           className="relative"

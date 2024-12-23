@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.169.153:4000/api/v1";
+const BASE_URL = "http://localhost:4000/api/v1";
 // const BASE_URL = "https://chatter-server-c8kd.onrender.com/api/v1";
 
 export const authEndPoints = {
