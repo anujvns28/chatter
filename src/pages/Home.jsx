@@ -15,10 +15,16 @@ import {
 import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
 import { useMediaQuery } from "react-responsive";
+import Group from "../components/core/group/group";
 
 const Home = () => {
-  const { showNotifaction, notificationCaount, searchUsers, currentChat } =
-    useSelector((state) => state.chat);
+  const {
+    showNotifaction,
+    notificationCaount,
+    searchUsers,
+    currentChat,
+    showGroupCreationModal,
+  } = useSelector((state) => state.chat);
   const { token } = useSelector((state) => state.auth);
 
   const { user } = useSelector((state) => state.auth);
@@ -124,6 +130,7 @@ const Home = () => {
 
         {searchUsers && <SearchUser />}
         {showNotifaction && <FriendRequestNotification />}
+        {showGroupCreationModal && <Group />}
       </div>
     </div>
   );

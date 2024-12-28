@@ -7,7 +7,11 @@ import { FaPlus } from "react-icons/fa6";
 import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenSearchBox, setShowNotification } from "../../slice/chatSlice";
+import {
+  setOpenSearchBox,
+  setShowGroupCreationModal,
+  setShowNotification,
+} from "../../slice/chatSlice";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -36,7 +40,7 @@ const Sidebar = () => {
         <p>
           <IoHome />
         </p>
-        <p>
+        <p onClick={() => dispatch(setShowGroupCreationModal(true))}>
           <FaPlus />
         </p>
         <p

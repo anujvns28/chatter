@@ -24,3 +24,8 @@ export const chatEndPoints = {
   FETCH_MESSAGE_API: BASE_URL + "/chat/getMessages",
   UPDATE_MESSAGE_READ_STATUS_API: BASE_URL + "/chat/updateMessageStatus",
 };
+
+
+export const groupEndPoints = {
+  CREATE_GROUP_CHAT: BASE_URL + "/group/createGroup",
+};

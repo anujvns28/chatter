@@ -7,6 +7,7 @@ const initialState = {
   showNotifaction: false,
   notificationCaount: 0,
   unReadMessagess: 4,
+  showGroupCreationModal: false,
 };
 
 export const chatSlice = createSlice({
@@ -31,6 +32,9 @@ export const chatSlice = createSlice({
     setUnReadMessagessCount(state, value) {
       state.unReadMessagess = value.payload;
     },
+    setShowGroupCreationModal(state, value) {
+      state.showGroupCreationModal = value.payload;
+    },
   },
 });
 
@@ -42,6 +46,7 @@ export const {
   setShowNotification,
   setNotifactionCount,
   setUnReadMessagessCount,
+  setShowGroupCreationModal,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

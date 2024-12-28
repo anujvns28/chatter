@@ -5,7 +5,7 @@ import {
   sendFraindRequestHandler,
 } from "../../../service/operation/user";
 
-const FriendRequestComponent = ({ allUsers, setAllUser }) => {
+const FriendRequestComponent = ({ allUsers, setAllUser, allFriends }) => {
   const [loadingUserId, setLoadingUserId] = useState(null);
   const { token } = useSelector((state) => state.auth);
 
@@ -15,7 +15,10 @@ const FriendRequestComponent = ({ allUsers, setAllUser }) => {
     setLoadingUserId(null);
     const updatedUser = await searchUserHandler("", token);
     if (updatedUser) {
-      setAllUser(updatedUser.users);
+      const otherUsers = updatedUser.users.filter(
+        (u) => !allFriends.includes(u._id)
+      );
+      setAllUser(otherUsers);
     }
   };
 

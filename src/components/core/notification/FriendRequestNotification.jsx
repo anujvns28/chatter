@@ -107,67 +107,108 @@ const FriendRequestNotification = () => {
 
         {friendRequests && friendRequests.length > 0 ? (
           <ul className="space-y-3">
-            {friendRequests.map((request) => (
-              <li
-                key={request._id}
-                className="p-3 border border-gray-200 rounded-md flex items-center justify-between"
-              >
-                {/* User Info */}
-                <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      request.status == "pending"
-                        ? request.sender.profilePic
-                        : request.receiver.profilePic || "/placeholder.png"
-                    }
-                    alt={`${
-                      request.status == "pending"
-                        ? request.sender.name
-                        : request.receiver.name
-                    } profile`}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {request.status == "pending"
-                        ? request.sender.name
-                        : request.receiver.name}
+            {friendRequests.map((request) =>
+              request.isGroup ? (
+                <li
+                  key={request._id}
+                  className="p-4 border border-gray-300 rounded-lg flex items-center justify-between bg-gray-50"
+                >
+                  {/* Group Info */}
+                  <div className="flex flex-col">
+                    <p className="font-bold text-gray-900 text-lg">
+                      {request.chatName || "Group"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      @
-                      {request.status == "pending"
-                        ? request.sender.username
-                        : request.receiver.username}
+                      Invited by @{request.sender.username}
                     </p>
                   </div>
-                </div>
 
-                {/* Actions: Accept / Decline */}
-                <div className="flex gap-2">
-                  {request.status === "pending" ? (
+                  {/* Actions: Accept / Decline */}
+                  <div className="flex gap-3">
+                    {request.status === "pending" ? (
+                      <>
+                        <button
+                          onClick={() => handleAccept(request._id)}
+                          className="px-4 py-1 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition"
+                        >
+                          Join Group
+                        </button>
+                        <button
+                          onClick={() => handleDecline(request._id)}
+                          className="px-4 py-1 bg-gray-400 text-white text-sm rounded-lg hover:bg-gray-500 transition"
+                        >
+                          Decline
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-green-600 font-semibold text-sm">
+                        Group Invitation Accepted
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ) : (
+                // One-to-one invite (existing code block)
+                <li
+                  key={request._id}
+                  className="p-3 border border-gray-200 rounded-md flex items-center justify-between"
+                >
+                  {/* User Info */}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={
+                        request.status == "pending"
+                          ? request.sender.profilePic
+                          : request.receiver.profilePic || "/placeholder.png"
+                      }
+                      alt={`${
+                        request.status == "pending"
+                          ? request.sender.name
+                          : request.receiver.name
+                      } profile`}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                     <div>
-                      <button
-                        onClick={() => handleAccept(request._id)}
-                        className="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-200"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => handleDecline(request._id)}
-                        className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200"
-                      >
-                        Decline
-                      </button>
+                      <p className="font-medium text-gray-800">
+                        {request.status == "pending"
+                          ? request.sender.name
+                          : request.receiver.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        @
+                        {request.status == "pending"
+                          ? request.sender.username
+                          : request.receiver.username}
+                      </p>
                     </div>
-                  ) : (
-                    // Show "New Friend Request" for accepted but unread requests
-                    <div className="text-sm text-blue-600">
-                      <p className="font-semibold">Friend Request Accepted</p>
-                    </div>
-                  )}
-                </div>
-              </li>
-            ))}
+                  </div>
+
+                  {/* Actions: Accept / Decline */}
+                  <div className="flex gap-2">
+                    {request.status === "pending" ? (
+                      <div>
+                        <button
+                          onClick={() => handleAccept(request._id)}
+                          className="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-200"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => handleDecline(request._id)}
+                          className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-blue-600">
+                        <p className="font-semibold">Friend Request Accepted</p>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              )
+            )}
           </ul>
         ) : (
           <p className="text-gray-500 text-center mt-6">

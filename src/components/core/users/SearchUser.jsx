@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOpenSearchBox } from "../../../slice/chatSlice";
 import { searchUserHandler } from "../../../service/operation/user";
 import FraindRequestComponent from "./FraindRequestComponent";
+import { fetchAllChatHandler } from "../../../service/operation/chat";
 
 const searchUser = () => {
   const { searchUsers, userLoading } = useSelector((state) => state.chat);
@@ -11,6 +12,7 @@ const searchUser = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [allUsers, setAllUser] = useState(null);
+  const [allFriends, setAllFriends] = useState([]);
 
   // clicked out sied code started
   const handleClickOutside = (event) => {
@@ -35,8 +37,15 @@ const searchUser = () => {
   useEffect(() => {
     const timeout = setTimeout(async () => {
       const result = await searchUserHandler(username, token);
+      const friends = await fetchAllChatHandler(token);
+
       if (result) {
-        setAllUser(result.users);
+        const friendIds = friends.chats.map((f) => f.userId);
+        setAllFriends(friendIds);
+        const otherUsers = result.users.filter(
+          (u) => !friendIds.includes(u._id)
+        );
+        setAllUser(otherUsers);
       }
     }, 2000);
 
@@ -69,6 +78,7 @@ const searchUser = () => {
             <FraindRequestComponent
               allUsers={allUsers}
               setAllUser={setAllUser}
+              allFriends={allFriends}
             />
           </div>
         </div>
