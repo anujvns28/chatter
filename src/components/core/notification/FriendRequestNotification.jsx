@@ -12,6 +12,7 @@ import {
 import useSocketConnection from "../../../hooks/socket";
 import { toast } from "react-toastify";
 import { GiThreePointedShuriken } from "react-icons/gi";
+import { respondToGroupInviteHandler } from "../../../service/operation/group";
 
 const FriendRequestNotification = () => {
   const modalRef = useRef();
@@ -79,11 +80,32 @@ const FriendRequestNotification = () => {
     await respondToFraindRequestHandler({
       requestId: id,
       action: "reject",
-      token: GiThreePointedShuriken,
+      token: token,
     });
     fetchFraindRequests(false);
   };
 
+  // groups
+  const handleAcceptGroupInvite = async (id) => {
+    console.log("group invteetadkljdfsakljfds");
+    await respondToGroupInviteHandler({
+      requestId: id,
+      action: "accept",
+      token: token,
+    });
+    fetchFraindRequests(false);
+  };
+
+  const handleDeclineGroupInvite = async (id) => {
+    await respondToGroupInviteHandler({
+      requestId: id,
+      action: "reject",
+      token: token,
+    });
+    fetchFraindRequests(false);
+  };
+
+  // close button
   const handleCloseButton = () => {
     fetchFraindRequests(true);
     dispatch(setShowNotification(false));
@@ -128,13 +150,13 @@ const FriendRequestNotification = () => {
                     {request.status === "pending" ? (
                       <>
                         <button
-                          onClick={() => handleAccept(request._id)}
+                          onClick={() => handleAcceptGroupInvite(request._id)}
                           className="px-4 py-1 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition"
                         >
                           Join Group
                         </button>
                         <button
-                          onClick={() => handleDecline(request._id)}
+                          onClick={() => handleDeclineGroupInvite(request._id)}
                           className="px-4 py-1 bg-gray-400 text-white text-sm rounded-lg hover:bg-gray-500 transition"
                         >
                           Decline

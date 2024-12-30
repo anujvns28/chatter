@@ -28,4 +28,5 @@ export const chatEndPoints = {
 
 export const groupEndPoints = {
   CREATE_GROUP_CHAT: BASE_URL + "/group/createGroup",
+  ACCEPT_GROUP_INVITE: BASE_URL + "/group/acceptInvite",
 };

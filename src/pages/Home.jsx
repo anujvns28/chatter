@@ -69,6 +69,7 @@ const Home = () => {
   // gettting real time fraind request
   useEffect(() => {
     const handleRequestMessage = () => {
+      console.log("getting real time requeist");
       toast.success("New Fraind Request");
       const nom = notificationCaount + 1;
       dispatch(setNotifactionCount(nom));

@@ -177,7 +177,11 @@ const ChatField = () => {
               <div className="rounded-full border border-black w-[50px] h-[50px]">
                 {chatDetails ? (
                   <img
-                    src={chatDetails?.users[0]?.profilePic}
+                    src={
+                      chatDetails.isGroupChat
+                        ? chatDetails?.chatImg
+                        : chatDetails?.users[0]?.profilePic
+                    }
                     alt="Profile"
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -185,27 +189,33 @@ const ChatField = () => {
                   <FaUser className="text-3xl" />
                 )}
               </div>
-              <div>
-                <h1 className="font-bold text-xl">
-                  {chatDetails?.users[0]?.name}
-                </h1>
-                <p className="text-xs">
-                  {chatDetails?.users[0]?.username} •{" "}
-                  {chatDetails?.users[0]?.status === "online" ? (
-                    "online"
-                  ) : (
-                    <span className="text-xs text-gray-400">
-                      Last Seen{" "}
-                      {new Date(
-                        chatDetails?.users[0]?.lastSeen
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+              {chatDetails && (
+                <div>
+                  <h1 className="font-bold text-xl">
+                    {chatDetails.isGroupChat
+                      ? chatDetails?.chatName
+                      : chatDetails?.users[0]?.name}
+                  </h1>
+                  {!chatDetails.isGroupChat && (
+                    <p className="text-xs">
+                      {chatDetails?.users[0]?.username} •{" "}
+                      {chatDetails?.users[0]?.status === "online" ? (
+                        "online"
+                      ) : (
+                        <span className="text-xs text-gray-400">
+                          Last Seen{" "}
+                          {new Date(
+                            chatDetails?.users[0]?.lastSeen
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      )}
+                    </p>
                   )}
-                </p>
-              </div>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-4 text-2xl">
               <FaPhoneAlt />
