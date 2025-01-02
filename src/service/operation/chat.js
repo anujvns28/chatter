@@ -87,12 +87,12 @@ export const fetchMessageHandler = async (data, token) => {
   return result;
 };
 
-export const updateMessageReadStatusHandler = async (data, token) => {
+export const updateMessageReadStatusHandler = async (data, token, info) => {
   try {
     const response = await axios({
       url: UPDATE_MESSAGE_READ_STATUS_API,
       method: "POST",
-      data: { chatId: data, token },
+      data: { chatId: data, token, info },
       withCredentials: true,
     });
 
@@ -101,3 +101,4 @@ export const updateMessageReadStatusHandler = async (data, token) => {
     console.log("erroro occuring in updating message status", err);
   }
 };
+

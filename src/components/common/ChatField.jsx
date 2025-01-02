@@ -11,7 +11,7 @@ import {
   updateMessageReadStatusHandler,
 } from "../../service/operation/chat";
 import useSocketConnection from "../../hooks/socket";
-import useFormattedTimestamp from "../../hooks/timestamp";
+import { current } from "@reduxjs/toolkit";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
@@ -19,44 +19,49 @@ const ChatField = () => {
   const { user } = useSelector((state) => state.auth);
   const [chatDetails, setChatDetails] = useState(null);
   const [inputField, setInputField] = useState("");
-  const [messages, setMessages] = useState(null);
+  const [messages, setMessages] = useState([]);
   const dispatch = useDispatch();
   const chatEndRef = useRef();
   const socket = useSocketConnection();
 
-  // fetching curret chat detils
+  // fetching current chat details
   const fetchCurrentChat = async () => {
-    if (currentChat) {
-      const result = await fetchChatDetailsHandler(currentChat, token);
-      if (result) setChatDetails(result.chatDetails);
+    if (!currentChat) return;
+
+    const result = await fetchChatDetailsHandler(currentChat, token);
+    if (result) {
+      // if current chat is not group then seting other user details as chat details
+      if (!result.chatDetails.isGroupChat) {
+        const otherUser = result.chatDetails?.users.find(
+          (u) => u._id != user._id
+        );
+        result.chatDetails.chatImg = otherUser.profilePic;
+        result.chatDetails.chatName = otherUser.name;
+        result.chatDetails.otherUser = otherUser;
+      }
+      setChatDetails(result.chatDetails);
     }
   };
 
-  // fetching current chat messagess
+  // fetching messagess
   const handleFetchingMessages = async () => {
-    if (currentChat) {
-      const result = await fetchMessageHandler(currentChat, token);
-      if (result) {
-        setMessages(result.messages);
-        // Find unread messages
-        const unreadMessages = result.messages.filter(
-          (message) => !message.isRead && message.sender !== user._id
-        );
+    if (!currentChat) return;
 
-        // Update unread message status
-        if (unreadMessages.length) {
-          await updateMessageReadStatusHandler(currentChat, token);
-        }
-      }
+    const result = await fetchMessageHandler(currentChat, token);
+    if (result) {
+      setMessages(result.messages);
     }
   };
 
   useEffect(() => {
-    fetchCurrentChat();
-    handleFetchingMessages();
+    const fetchChatAndMessages = async () => {
+      await fetchCurrentChat();
+      await handleFetchingMessages();
+    };
+
+    fetchChatAndMessages();
   }, [currentChat]);
 
-  // sending message to user
   const handleSendMessage = async () => {
     if (!inputField.trim()) return;
 
@@ -65,26 +70,19 @@ const ChatField = () => {
     if (newMessage) {
       const response = newMessage.message;
       response.sender = user;
-
       setMessages((prevMessage) => [...prevMessage, response]);
     }
-
     setInputField("");
   };
 
-  // get realtime messages
   useEffect(() => {
     if (socket) {
       socket.on("sendMessage", async (data) => {
-        console.log(data, "socket data");
         if (data.chat === currentChat) {
           setMessages((prev) => [...prev, data]);
-          await updateMessageReadStatusHandler(currentChat, token);
-          console.log("getting in real time");
         }
       });
     }
-
     return () => {
       if (socket) {
         socket.off("sendMessage");
@@ -92,26 +90,10 @@ const ChatField = () => {
     };
   }, [socket, currentChat]);
 
-  // update message read status in real time
+  // for updating messae status
   useEffect(() => {
     if (socket) {
-      socket.on("messageRead", (data) => {
-        console.log(data, "thsi is messaeREad");
-        setMessages((prevMessages) => {
-          // Create a Set for faster lookup of messageIds
-          const updatedMessageIds = new Set(data.messageIds);
-
-          // Map over previous messages and update isRead for matching IDs
-          const updatedMessages =
-            prevMessages &&
-            prevMessages.map((message) =>
-              updatedMessageIds.has(message._id)
-                ? { ...message, isRead: true }
-                : message
-            );
-          return updatedMessages;
-        });
-      });
+      socket.on("messageRead", (data) => {});
     }
 
     return () => {
@@ -121,34 +103,36 @@ const ChatField = () => {
     };
   }, []);
 
-  // Auto-scroll when messages change
+  // for scrolling
   useEffect(() => {
-    const scrollAndMarkMessagesAsRead = async () => {
-      if (chatEndRef.current) {
-        chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    };
-    scrollAndMarkMessagesAsRead();
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
-  // update frainds status
+  // user open or switch chat then update chat all messagess
   useEffect(() => {
-    socket.on("status-update", () => {
-      fetchCurrentChat();
-      console.log("rt messagess updated", currentChat);
-    });
-
-    return () => {
-      if (socket) {
-        socket.off("status-update");
+    const updateMessageStatus = async () => {
+      if (currentChat) {
+        await updateMessageReadStatusHandler(currentChat, token, "updating");
       }
     };
-  }, [socket, currentChat]);
 
-  ////// typing status showing
+    updateMessageStatus();
+  }, [currentChat]);
+
+  // ** for user status online or lastseen
+  // useEffect(() => {
+  //   socket.on("status-update", fetchCurrentChat);
+  //   return () => {
+  //     socket.off("status-update", fetchCurrentChat);
+  //   };
+  // }, [socket, currentChat]);
+
+  // console.log(chatDetails, "this is chat details");
 
   return (
-    <div className="flex  flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
+    <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
       {!currentChat ? (
         <div className="flex flex-col items-center justify-center h-full text-center bg-gray-50">
           <img
@@ -171,17 +155,12 @@ const ChatField = () => {
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          {/* Chat Info */}
           <div className="px-5 border-b pb-2 border-black flex justify-between">
             <div className="flex items-center gap-3">
               <div className="rounded-full border border-black w-[50px] h-[50px]">
                 {chatDetails ? (
                   <img
-                    src={
-                      chatDetails.isGroupChat
-                        ? chatDetails?.chatImg
-                        : chatDetails?.users[0]?.profilePic
-                    }
+                    src={chatDetails?.chatImg}
                     alt="Profile"
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -191,27 +170,22 @@ const ChatField = () => {
               </div>
               {chatDetails && (
                 <div>
-                  <h1 className="font-bold text-xl">
-                    {chatDetails.isGroupChat
-                      ? chatDetails?.chatName
-                      : chatDetails?.users[0]?.name}
-                  </h1>
+                  <h1 className="font-bold text-xl">{chatDetails?.chatName}</h1>
                   {!chatDetails.isGroupChat && (
                     <p className="text-xs">
-                      {chatDetails?.users[0]?.username} •{" "}
-                      {chatDetails?.users[0]?.status === "online" ? (
-                        "online"
-                      ) : (
-                        <span className="text-xs text-gray-400">
-                          Last Seen{" "}
-                          {new Date(
+                      {chatDetails?.otherUser?.username} •{" "}
+                      {chatDetails?.otherUser?.status === "online"
+                        ? "online"
+                        : `Last Seen ${
                             chatDetails?.users[0]?.lastSeen
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      )}
+                              ? new Date(
+                                  chatDetails?.users[0]?.lastSeen
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : ""
+                          }`}
                     </p>
                   )}
                 </div>
@@ -224,10 +198,9 @@ const ChatField = () => {
             </div>
           </div>
 
-          {/* Chat Area */}
           <div className="flex-grow overflow-y-auto hide-scrollbar p-4 chat-container">
-            {messages?.length ? (
-              messages.map((message, index) => (
+            {messages?.length > 0 ? (
+              messages.map((message) => (
                 <div key={message._id}>
                   {message.isNotification ? (
                     <div className="flex justify-center mb-4">
@@ -258,9 +231,7 @@ const ChatField = () => {
                         }`}
                       >
                         <p>{message.content}</p>
-
                         <div className="flex justify-between items-center">
-                          {/* Timestamp */}
                           <span className="text-xs text-gray-400">
                             {new Date(message.createdAt).toLocaleTimeString(
                               [],
@@ -270,11 +241,12 @@ const ChatField = () => {
                               }
                             )}
                           </span>
-
-                          {/* Read Status */}
                           {message.sender._id === user._id && (
                             <span className="text-xs text-gray-400 ml-2">
-                              {message.isRead ? "Seen" : "Delivered"}
+                              {message.readBy.length ===
+                              chatDetails.users.length
+                                ? "Seen"
+                                : "Delivered"}
                             </span>
                           )}
                         </div>
@@ -289,7 +261,6 @@ const ChatField = () => {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Input Field */}
           <div className="flex items-center sm:p-4 p-1 bg-gray-100 border-t border-gray-300">
             <input
               type="text"
