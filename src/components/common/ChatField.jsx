@@ -75,11 +75,14 @@ const ChatField = () => {
     setInputField("");
   };
 
+  // gettting messsages in real time
   useEffect(() => {
     if (socket) {
       socket.on("sendMessage", async (data) => {
         if (data.chat === currentChat) {
           setMessages((prev) => [...prev, data]);
+          // update message status seen
+          await updateMessageReadStatusHandler(currentChat, token, "updating");
         }
       });
     }
@@ -93,7 +96,16 @@ const ChatField = () => {
   // for updating messae status
   useEffect(() => {
     if (socket) {
-      socket.on("messageRead", (data) => {});
+      socket.on("messageRead", (data) => {
+        const unreadSet = new Set(data.messageIds);
+        setMessages((prev) =>
+          prev.map((m) => {
+            return unreadSet.has(m._id)
+              ? { ...m, readBy: [...m.readBy, m._id] }
+              : m;
+          })
+        );
+      });
     }
 
     return () => {
@@ -119,17 +131,15 @@ const ChatField = () => {
     };
 
     updateMessageStatus();
-  }, [currentChat]);
+  }, [currentChat, token]);
 
   // ** for user status online or lastseen
-  // useEffect(() => {
-  //   socket.on("status-update", fetchCurrentChat);
-  //   return () => {
-  //     socket.off("status-update", fetchCurrentChat);
-  //   };
-  // }, [socket, currentChat]);
-
-  // console.log(chatDetails, "this is chat details");
+  useEffect(() => {
+    socket.on("status-update", fetchCurrentChat);
+    return () => {
+      socket.off("status-update", fetchCurrentChat);
+    };
+  }, [socket, currentChat]);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
@@ -177,9 +187,9 @@ const ChatField = () => {
                       {chatDetails?.otherUser?.status === "online"
                         ? "online"
                         : `Last Seen ${
-                            chatDetails?.users[0]?.lastSeen
+                            chatDetails?.otherUser?.lastSeen
                               ? new Date(
-                                  chatDetails?.users[0]?.lastSeen
+                                  chatDetails?.otherUser?.lastSeen
                                 ).toLocaleTimeString([], {
                                   hour: "2-digit",
                                   minute: "2-digit",

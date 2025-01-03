@@ -87,16 +87,23 @@ export const fetchMessageHandler = async (data, token) => {
   return result;
 };
 
+let loading = false;
 export const updateMessageReadStatusHandler = async (data, token, info) => {
   try {
-    const response = await axios({
-      url: UPDATE_MESSAGE_READ_STATUS_API,
-      method: "POST",
-      data: { chatId: data, token, info },
-      withCredentials: true,
-    });
+    if (!loading) {
+      loading = true;
+      const response = await axios({
+        url: UPDATE_MESSAGE_READ_STATUS_API,
+        method: "POST",
+        data: { chatId: data, token, info },
+        withCredentials: true,
+      });
 
-    console.log(response, "updating message resposnse");
+      console.log(response, "updating message resposnse");
+      loading = false;
+    } else {
+      console.log("loading.. ho rha hai be");
+    }
   } catch (err) {
     console.log("erroro occuring in updating message status", err);
   }

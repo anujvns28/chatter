@@ -109,21 +109,24 @@ const Home = () => {
         {/* sidebar */}
         <Sidebar />
 
-        <div className="flex h-full flex-row md:gap-6 sm:gap-6 gap-3 w-full">
-          {/* chats */}
-          {!isSmallScreen && (
-            <div className=" w-[40%]">
-              <Chats socket={socket} />
-            </div>
-          )}
+        <div className="flex h-full w-full relative">
+          {/* Chats */}
+          <div
+            className={`${isSmallScreen ? "hidden" : "block"} w-[40%] h-full`}
+          >
+            <Chats socket={socket} />
+          </div>
 
-          {isSmallScreen && (
-            <div className="w-full h-full border border-blue-800">
-              {currentChat ? <ChatField /> : <Chats socket={socket} />}
-            </div>
-          )}
+          {/* Chats for small screens */}
+          <div
+            className={`${
+              isSmallScreen ? "block" : "hidden"
+            } w-full h-full border border-blue-800`}
+          >
+            {currentChat ? <ChatField /> : <Chats socket={socket} />}
+          </div>
 
-          {/* chat field */}
+          {/* ChatField */}
           <div className="w-full sm:flex hidden">
             <ChatField />
           </div>
