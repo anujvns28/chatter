@@ -9,7 +9,6 @@ import {
   fetchAllRequestHandler,
   respondToFraindRequestHandler,
 } from "../../../service/operation/user";
-import useSocketConnection from "../../../hooks/socket";
 import { toast } from "react-toastify";
 import { GiThreePointedShuriken } from "react-icons/gi";
 import { respondToGroupInviteHandler } from "../../../service/operation/group";

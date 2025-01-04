@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
+import { SocketProvider } from "./socketContext";
 
 function ProtectedRoute({ children }) {
   // const token = Cookies.get("token");
@@ -25,7 +26,9 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <SocketProvider>
+                <Home />
+              </SocketProvider>
             </ProtectedRoute>
           }
         />

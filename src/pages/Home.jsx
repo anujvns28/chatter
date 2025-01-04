@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Sidebar from "../components/common/Sidebar";
 import Chats from "../components/common/Chats";
 import ChatField from "../components/common/ChatField";
@@ -7,7 +7,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import SearchUser from "../components/core/users/SearchUser";
 import FriendRequestNotification from "../components/core/notification/FriendRequestNotification";
 import { useDispatch, useSelector } from "react-redux";
-import useSocketConnection from "../hooks/socket";
+import { SocketContext } from "../socketContext";
 import {
   fetchAllRequestHandler,
   updateUserStatusHandler,
@@ -33,7 +33,7 @@ const Home = () => {
   const isSmallScreen = useMediaQuery({ maxWidth: 640 });
 
   // socket connection
-  const socket = useSocketConnection();
+  const socket = useContext(SocketContext);
 
   // set notification count
   const notifactionCountHandler = async () => {

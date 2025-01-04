@@ -68,13 +68,14 @@ export const sendMessageHandler = async (data) => {
   return result;
 };
 
-export const fetchMessageHandler = async (data, token) => {
+export const fetchMessageHandler = async (data, token, page) => {
   let result;
   try {
     const response = await axios({
       url: FETCH_MESSAGE_API,
       method: "POST",
       data: { chatId: data, token },
+      params: { page },
       withCredentials: true,
     });
 

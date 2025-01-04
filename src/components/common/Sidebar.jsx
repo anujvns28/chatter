@@ -8,17 +8,18 @@ import { IoHome, IoMoonSharp } from "react-icons/io5";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setCurrentChat,
   setOpenSearchBox,
   setShowGroupCreationModal,
   setShowNotification,
 } from "../../slice/chatSlice";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
   const { notificationCaount } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
-
-  console.log(notificationCaount, "this is count");
+  const navigate = useNavigate();
 
   return (
     <div className="flex md:flex-col flex-row-reverse justify-between py-4 border md:h-full h-[50px] min-w-[80px] rounded-xl border-black md:w-[8%] w-full bg-blue-600 ">
@@ -37,7 +38,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-full cursor-pointer  flex md:-translate-y-16 md:flex-col flex-row  items-center   md:justify-center justify-around   gap-7 text-3xl text-white">
-        <p>
+        <p onClick={() => dispatch(setCurrentChat(null))}>
           <IoHome />
         </p>
         <p onClick={() => dispatch(setShowGroupCreationModal(true))}>

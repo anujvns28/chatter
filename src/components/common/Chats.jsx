@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { fetchAllChatHandler } from "../../service/operation/chat";
 import ChatComponent from "../core/chat/ChatComponent";
-import useSocketConnection from "../../hooks/socket";
+import { SocketContext } from "../../socketContext";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { setNotifactionCount } from "../../slice/chatSlice";
@@ -14,7 +14,7 @@ const Chats = () => {
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const socket = useSocketConnection();
+  const socket = useContext(SocketContext);
 
   const fetchAllChats = async () => {
     const data = await fetchAllChatHandler(token);
@@ -73,4 +73,3 @@ const Chats = () => {
 };
 
 export default Chats;
- 

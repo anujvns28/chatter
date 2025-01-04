@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaUser, FaPhoneAlt, FaVideo } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import logo from "../../assets/logo.jpg";
@@ -10,7 +10,7 @@ import {
   sendMessageHandler,
   updateMessageReadStatusHandler,
 } from "../../service/operation/chat";
-import useSocketConnection from "../../hooks/socket";
+import { SocketContext, SocketProvider } from "../../socketContext";
 import { current } from "@reduxjs/toolkit";
 
 const ChatField = () => {
@@ -20,14 +20,16 @@ const ChatField = () => {
   const [chatDetails, setChatDetails] = useState(null);
   const [inputField, setInputField] = useState("");
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const dispatch = useDispatch();
   const chatEndRef = useRef();
-  const socket = useSocketConnection();
+  const socket = useContext(SocketContext);
 
   // fetching current chat details
   const fetchCurrentChat = async () => {
     if (!currentChat) return;
-
     const result = await fetchChatDetailsHandler(currentChat, token);
     if (result) {
       // if current chat is not group then seting other user details as chat details
@@ -45,11 +47,27 @@ const ChatField = () => {
 
   // fetching messagess
   const handleFetchingMessages = async () => {
-    if (!currentChat) return;
-
-    const result = await fetchMessageHandler(currentChat, token);
+    if (!currentChat || loading) return;
+    console.log("fetching... messagesss");
+    setLoading(true);
+    //fetching messagess
+    const result = await fetchMessageHandler(currentChat, token, page);
     if (result) {
-      setMessages(result.messages);
+      console.log(result.messages, page);
+      setMessages((prevMessage) => [...result.messages, ...prevMessage]);
+      setHasMore(result.messages.length > 0);
+      setPage((prevPage) => prevPage + 1);
+    } else {
+      setHasMore(false);
+    }
+    setLoading(false);
+  };
+
+  // Handle scrolling and fetch messages when user reaches the top
+  const handleScroll = async (e) => {
+    const top = e.target.scrollTop === 0;
+    if (!loading && hasMore && top) {
+      await handleFetchingMessages();
     }
   };
 
@@ -116,11 +134,11 @@ const ChatField = () => {
   }, []);
 
   // for scrolling
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+  // useEffect(() => {
+  //   if (chatEndRef.current) {
+  //     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [messages]);
 
   // user open or switch chat then update chat all messagess
   useEffect(() => {
@@ -140,6 +158,11 @@ const ChatField = () => {
       socket.off("status-update", fetchCurrentChat);
     };
   }, [socket, currentChat]);
+
+  useEffect(() => {
+    setPage(1);
+    setMessages([]);
+  }, [currentChat]);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
@@ -208,7 +231,10 @@ const ChatField = () => {
             </div>
           </div>
 
-          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 chat-container">
+          <div
+            onScroll={handleScroll}
+            className="flex-grow overflow-y-auto hide-scrollbar p-4 chat-container"
+          >
             {messages?.length > 0 ? (
               messages.map((message) => (
                 <div key={message._id}>
@@ -234,7 +260,7 @@ const ChatField = () => {
                         />
                       )}
                       <div
-                        className={`p-3 rounded-lg max-w-md shadow-md ${
+                        className={`p-2 rounded-lg max-w-md shadow-md ${
                           message.sender._id === user._id
                             ? "bg-blue-500 text-white"
                             : "bg-gray-100 text-black"
