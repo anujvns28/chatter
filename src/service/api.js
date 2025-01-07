@@ -15,6 +15,8 @@ export const userEndPoints = {
   RESPOND_TO_FRAIND_REQUEST_API: BASE_URL + "/user/respondToFraindRequest",
   FETCH_ALL_REQUEST_API: BASE_URL + "/user/fetchAllFraindRequests",
   UPDATE_USER_STATUS_API: BASE_URL + "/user/updateUserStatus",
+  SEND_RESET_PASSWORD_API: BASE_URL + "/user/sendResetLink",
+  UPDATE_PASSWORD_API: BASE_URL + "/user/updatePassword",
 };
 
 export const chatEndPoints = {

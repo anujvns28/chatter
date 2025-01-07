@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
 import { SocketProvider } from "./socketContext";
+import FrogotPassword from "./pages/FrogotPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 
 function ProtectedRoute({ children }) {
   // const token = Cookies.get("token");
@@ -20,6 +22,8 @@ function App() {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<FrogotPassword />} />
+        <Route path="/forgot-password/:token" element={<UpdatePassword />} />
 
         {/* Protected Routes */}
         <Route

@@ -69,7 +69,10 @@ const Login = () => {
               >
                 Sign In
               </button>
-              <span className="inline-block cursor-pointer align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+              <span
+                onClick={() => navigate("/forgot-password")}
+                className="inline-block cursor-pointer align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              >
                 Forgot Password?
               </span>
             </div>

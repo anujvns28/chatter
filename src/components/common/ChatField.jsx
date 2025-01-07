@@ -23,9 +23,13 @@ const ChatField = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [msgFroScrolling, setMsgForScrolling] = useState([]);
   const dispatch = useDispatch();
   const chatEndRef = useRef();
   const socket = useContext(SocketContext);
+  const chatContainerRef = useRef();
+  let messageContainerHeight =
+    chatContainerRef.current && chatContainerRef.current.scrollHeight;
 
   // fetching current chat details
   const fetchCurrentChat = async () => {
@@ -46,17 +50,29 @@ const ChatField = () => {
   };
 
   // fetching messagess
-  const handleFetchingMessages = async () => {
+  const handleFetchingMessages = async (pageCount) => {
     if (!currentChat || loading) return;
-    console.log("fetching... messagesss");
     setLoading(true);
     //fetching messagess
-    const result = await fetchMessageHandler(currentChat, token, page);
+    const result = await fetchMessageHandler(currentChat, token, pageCount);
     if (result) {
-      console.log(result.messages, page);
+      console.log(result.messages);
       setMessages((prevMessage) => [...result.messages, ...prevMessage]);
+
+      let currHeight = chatContainerRef.current.scrollHeight;
+      console.log(currHeight, "currn heg");
+      console.log(messageContainerHeight, "contanrer height");
+      console.log(currHeight - messageContainerHeight, "scroll bar");
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTo({
+          top: currHeight - messageContainerHeight,
+          behavior: "smooth",
+        });
+      }
+
       setHasMore(result.messages.length > 0);
-      setPage((prevPage) => prevPage + 1);
+      if (pageCount == 1)
+        setMsgForScrolling((prev) => [...result.messages, ...prev]);
     } else {
       setHasMore(false);
     }
@@ -65,18 +81,21 @@ const ChatField = () => {
 
   // Handle scrolling and fetch messages when user reaches the top
   const handleScroll = async (e) => {
-    const top = e.target.scrollTop === 0;
-    if (!loading && hasMore && top) {
-      await handleFetchingMessages();
+    if (e.target.scrollTop === 0 && !loading && hasMore) {
+      let pageno = page;
+      pageno++;
+      console.log(pageno, "page no");
+      await handleFetchingMessages(pageno);
+      setPage(pageno);
     }
   };
 
   useEffect(() => {
     const fetchChatAndMessages = async () => {
+      setPage(1);
       await fetchCurrentChat();
-      await handleFetchingMessages();
+      await handleFetchingMessages(1);
     };
-
     fetchChatAndMessages();
   }, [currentChat]);
 
@@ -89,6 +108,7 @@ const ChatField = () => {
       const response = newMessage.message;
       response.sender = user;
       setMessages((prevMessage) => [...prevMessage, response]);
+      setMsgForScrolling((prev) => [...prev, response]);
     }
     setInputField("");
   };
@@ -133,13 +153,6 @@ const ChatField = () => {
     };
   }, []);
 
-  // for scrolling
-  // useEffect(() => {
-  //   if (chatEndRef.current) {
-  //     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, [messages]);
-
   // user open or switch chat then update chat all messagess
   useEffect(() => {
     const updateMessageStatus = async () => {
@@ -160,9 +173,15 @@ const ChatField = () => {
   }, [socket, currentChat]);
 
   useEffect(() => {
-    setPage(1);
     setMessages([]);
   }, [currentChat]);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [msgFroScrolling]);
 
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
@@ -233,7 +252,8 @@ const ChatField = () => {
 
           <div
             onScroll={handleScroll}
-            className="flex-grow overflow-y-auto hide-scrollbar p-4 chat-container"
+            ref={chatContainerRef}
+            className="flex-grow overflow-y-auto  p-4 chat-container"
           >
             {messages?.length > 0 ? (
               messages.map((message) => (

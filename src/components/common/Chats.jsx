@@ -48,7 +48,6 @@ const Chats = () => {
     };
   }, [socket]);
 
-  console.log(chatList, "list");
 
   return (
     <div className="flex h-full flex-col gap-3">

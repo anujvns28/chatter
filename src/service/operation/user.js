@@ -1,6 +1,8 @@
 import axios from "axios";
 import { userEndPoints } from "../api";
 import { setUserLoading } from "../../slice/chatSlice";
+import { setAuthLoading } from "../../slice/authSlice";
+import { toast } from "react-toastify";
 
 const {
   SEARCH_USER_API,
@@ -8,6 +10,8 @@ const {
   SEND_FRIND_REQUEST_API,
   FETCH_ALL_REQUEST_API,
   UPDATE_USER_STATUS_API,
+  SEND_RESET_PASSWORD_API,
+  UPDATE_PASSWORD_API,
 } = userEndPoints;
 
 export const searchUserHandler = async (username, token) => {
@@ -110,5 +114,44 @@ export const updateUserStatusHandler = async (data, token) => {
   } catch (err) {
     console.log("error in updating user status ali", err);
   }
+};
+
+export const sendRestPasswordLink = async (data, dispatch) => {
+  dispatch(setAuthLoading(true));
+  try {
+    const response = await axios({
+      method: "POST",
+      url: SEND_RESET_PASSWORD_API,
+      data: { mail: data },
+    });
+
+    if (response) {
+      console.log("reseme mail send successfully");
+      toast.success("Reset link sent");
+    }
+  } catch (err) {
+    console.log(err, "error occured in sending reset link");
+    toast.error("Email is not registered");
+  }
+  dispatch(setAuthLoading(false));
+};
+
+export const updatePassword = async (data, navigate, dispatch) => {
+  dispatch(setAuthLoading(true));
+  try {
+    const response = await axios({
+      method: "POST",
+      url: UPDATE_PASSWORD_API,
+      data: data,
+    });
+
+    if (response) {
+      console.log("reset mail successfully");
+      navigate("/login");
+    }
+  } catch (err) {
+    console.log(err, "error occured in updating reset mail");
+  }
+  dispatch(setAuthLoading(false));
 };
 
