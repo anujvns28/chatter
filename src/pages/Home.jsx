@@ -15,7 +15,7 @@ import {
 import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
 import { useMediaQuery } from "react-responsive";
-import Group from "../components/core/group/group";
+import Group from "../components/core/group/Group";
 
 const Home = () => {
   const {
