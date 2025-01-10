@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaUser } from "react-icons/fa6";
 import { MdOutlineNotifications } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
@@ -14,12 +14,29 @@ import {
   setShowNotification,
 } from "../../slice/chatSlice";
 import { useNavigate } from "react-router-dom";
+import DropDown from "../core/dropdown/DropDown";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
   const { notificationCaount } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showDropDown, setShowDropDown] = useState(false);
+  const dropDownRef = useRef();
+
+  const handleOutSideClickOfDropDown = (e) => {
+    if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+      setShowDropDown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showDropDown) {
+      window.addEventListener("mousedown", handleOutSideClickOfDropDown);
+    } else {
+      window.removeEventListener("mousedown", handleOutSideClickOfDropDown);
+    }
+  }, [showDropDown]);
 
   return (
     <div className="flex md:flex-col flex-row-reverse justify-between py-4 border md:h-full h-[50px] min-w-[80px] rounded-xl border-black md:w-[8%] w-full bg-blue-600 ">
@@ -61,9 +78,16 @@ const Sidebar = () => {
             </span>
           )}
         </p>
-        <p className="hidden md:flex">
-          <IoMdSettings />
-        </p>
+        <div ref={dropDownRef} className="hidden relative md:flex">
+          <p onClick={() => setShowDropDown((prev) => !prev)}>
+            {" "}
+            <IoMdSettings />
+          </p>
+          <div className="absolute translate-x-8 z-50 translate-y-5">
+            {" "}
+            {showDropDown && <DropDown />}
+          </div>
+        </div>
       </div>
 
       <div className=" items-center justify-center hidden md:flex   ">

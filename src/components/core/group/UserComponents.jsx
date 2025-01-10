@@ -34,7 +34,7 @@ const UserComponents = ({ allUsers, selectedUser, setSelectedUser }) => {
           </li>
         ))
       ) : (
-        <li className="text-center text-gray-500 py-4">No users found</li>
+        <li className="text-center text-gray-500 py-4">Loading...</li>
       )}
     </ul>
   );

@@ -50,8 +50,8 @@ const Chats = () => {
 
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <div className="bg-white px-4 py-1 rounded-lg shadow-md h-full w-full min-w-[220px] overflow-y-auto border border-black">
+    <div className="flex  h-full flex-col gap-3">
+      <div className=" z-10 bg-white px-4 py-1 rounded-lg shadow-md h-full w-full min-w-[220px] overflow-y-auto border border-black">
         <p className="font-bold ">chats</p>
         <div className="space-y-2">
           {chatList ? (

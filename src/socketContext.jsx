@@ -71,7 +71,11 @@ export const SocketProvider = ({ children }) => {
 
   // Render children only if socket is ready
   if (!socketReady) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen w-screen flex items-center text-black justify-center">
+        <div className="custom-loader"></div>
+      </div>
+    );
   }
 
   return (

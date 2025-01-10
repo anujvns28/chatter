@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Sidebar from "../components/common/Sidebar";
 import Chats from "../components/common/Chats";
 import ChatField from "../components/common/ChatField";
@@ -16,6 +16,7 @@ import { setNotifactionCount } from "../slice/chatSlice";
 import { toast } from "react-toastify";
 import { useMediaQuery } from "react-responsive";
 import Group from "../components/core/group/Group";
+import DropDown from "../components/core/dropdown/DropDown";
 
 const Home = () => {
   const {
@@ -31,6 +32,8 @@ const Home = () => {
   const dispatch = useDispatch();
   // Check if the screen size is small (mobile)
   const isSmallScreen = useMediaQuery({ maxWidth: 640 });
+  const [showDropDown, setShowDropDown] = useState(false);
+  const dropDownRef = useRef();
 
   // socket connection
   const socket = useContext(SocketContext);
@@ -90,18 +93,41 @@ const Home = () => {
     updateUserStatus();
   }, []);
 
+  // drop down outside click
+  const handleOutSideClickOfDropDown = (e) => {
+    if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+      setShowDropDown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showDropDown) {
+      window.addEventListener("mousedown", handleOutSideClickOfDropDown);
+    } else {
+      window.removeEventListener("mousedown", handleOutSideClickOfDropDown);
+    }
+  }, [showDropDown]);
+
   return (
-    <div className="h-screen w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
+    <div className="h-screen  w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
       {/* Search box only for phones */}
-      <div className="bg-blue-600 p-4 rounded-b-lg shadow-md w-full block md:hidden">
+      <div className="bg-blue-600 z-10 p-4 rounded-b-lg shadow-md w-full block md:hidden">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <p className="text-white text-2xl font-bold">Chatter</p>
 
           {/* Hamburger Menu Icon */}
-          <p className="text-white text-2xl cursor-pointer">
-            <GiHamburgerMenu />
-          </p>
+          <div
+            ref={dropDownRef}
+            className="text-white relative text-2xl cursor-pointer"
+          >
+            <div onClick={() => setShowDropDown((prev) => !prev)}>
+              <GiHamburgerMenu />
+            </div>
+            <div className="absolute -translate-x-28">
+              {showDropDown && <DropDown />}
+            </div>
+          </div>
         </div>
       </div>
 

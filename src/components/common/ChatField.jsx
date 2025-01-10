@@ -3,7 +3,7 @@ import { FaUser, FaPhoneAlt, FaVideo } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import logo from "../../assets/logo.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenSearchBox } from "../../slice/chatSlice";
+import { setCurrentChat, setOpenSearchBox } from "../../slice/chatSlice";
 import {
   fetchChatDetailsHandler,
   fetchMessageHandler,
@@ -12,6 +12,7 @@ import {
 } from "../../service/operation/chat";
 import { SocketContext, SocketProvider } from "../../socketContext";
 import { current } from "@reduxjs/toolkit";
+import { IoArrowBack } from "react-icons/io5";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
@@ -207,45 +208,54 @@ const ChatField = () => {
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          <div className="px-5 border-b pb-2 border-black flex justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-full border border-black w-[50px] h-[50px]">
-                {chatDetails ? (
-                  <img
-                    src={chatDetails?.chatImg}
-                    alt="Profile"
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <FaUser className="text-3xl" />
-                )}
+          <div className=" border-b pb-2 border-black flex justify-between">
+            <div className="flex flex-row gap-2 ">
+              {/* back button for small screens  */}
+              <div
+                onClick={() => dispatch(setCurrentChat(null))}
+                className="flex sm:hidden items-center justify-between   cursor-pointer text-3xl font-bold"
+              >
+                <IoArrowBack />
               </div>
-              {chatDetails && (
-                <div>
-                  <h1 className="font-bold text-xl">{chatDetails?.chatName}</h1>
-                  {!chatDetails.isGroupChat && (
-                    <p className="text-xs">
-                      {chatDetails?.otherUser?.username} •{" "}
-                      {chatDetails?.otherUser?.status === "online"
-                        ? "online"
-                        : `Last Seen ${
-                            chatDetails?.otherUser?.lastSeen
-                              ? new Date(
-                                  chatDetails?.otherUser?.lastSeen
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
-                              : ""
-                          }`}
-                    </p>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full border border-black w-[50px] h-[50px]">
+                  {chatDetails ? (
+                    <img
+                      src={chatDetails?.chatImg}
+                      alt="Profile"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <FaUser className="text-3xl" />
                   )}
                 </div>
-              )}
+                {chatDetails && (
+                  <div>
+                    <h1 className="font-bold text-xl">
+                      {chatDetails?.chatName}
+                    </h1>
+                    {!chatDetails.isGroupChat && (
+                      <p className="text-xs">
+                        {chatDetails?.otherUser?.username} •{" "}
+                        {chatDetails?.otherUser?.status === "online"
+                          ? "online"
+                          : `Last Seen ${
+                              chatDetails?.otherUser?.lastSeen
+                                ? new Date(
+                                    chatDetails?.otherUser?.lastSeen
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : ""
+                            }`}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-4 text-2xl">
-              <FaPhoneAlt />
-              <FaVideo />
               <BsThreeDotsVertical />
             </div>
           </div>
