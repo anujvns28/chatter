@@ -11,8 +11,8 @@ import {
   updateMessageReadStatusHandler,
 } from "../../service/operation/chat";
 import { SocketContext, SocketProvider } from "../../socketContext";
-import { current } from "@reduxjs/toolkit";
 import { IoArrowBack } from "react-icons/io5";
+import { typingStatusHandler } from "../../service/operation/user";
 
 const ChatField = () => {
   const { currentChat } = useSelector((state) => state.chat);
@@ -31,6 +31,11 @@ const ChatField = () => {
   const chatContainerRef = useRef();
   let messageContainerHeight =
     chatContainerRef.current && chatContainerRef.current.scrollHeight;
+
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  const [typingStarted, setTypingStarted] = useState(false);
+  const [typerImg, setTyperImg] = useState();
 
   // fetching current chat details
   const fetchCurrentChat = async () => {
@@ -184,6 +189,75 @@ const ChatField = () => {
     }
   }, [msgFroScrolling]);
 
+  // Typing function, called when the user starts typing
+  const typing = async () => {
+    console.log("User is typing:");
+    setIsTyping(true);
+    const data = {
+      token: token,
+      chatId: currentChat,
+      typingStatus: "Typing",
+    };
+
+    await typingStatusHandler(data);
+  };
+
+  // Stop typing function, called after 2 seconds of inactivity
+  const stopTyping = async () => {
+    console.log("User stopped typing.");
+    setIsTyping(false);
+    const data = {
+      token: token,
+      chatId: currentChat,
+      typingStatus: "StopTyping",
+    };
+
+    await typingStatusHandler(data);
+  };
+
+  // handleChange function
+  const handleTyping = (e) => {
+    const value = e.target.value;
+    setInputField(value);
+    // Call the typing function immediately when the first character is typed
+    if (!isTyping && value) {
+      typing();
+    }
+
+    // Clear the previous timeout to reset the timer for inactivity
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set a new timeout for stopping typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      stopTyping();
+    }, 2000);
+  };
+
+  // listne typing event
+  useEffect(() => {
+    socket.on("typing", (data) => {
+      if (data.chatId === currentChat) {
+        console.log("Start typing detected:", data);
+        setTypingStarted(true); // Set state to show "typing..." indicator
+        setTyperImg(data.img);
+      }
+    });
+
+    socket.on("stopTyping", (data) => {
+      if (data.chatId === currentChat) {
+        console.log("Stop typing detected:", data);
+        setTypingStarted(false); // Set state to remove "typing..." indicator
+      }
+    });
+
+    return () => {
+      socket.off("typing");
+      socket.off("stopTyping");
+    };
+  }, [socket, currentChat]);
+
   return (
     <div className="flex flex-col bg-white h-full w-full p-4 rounded-lg shadow-md border border-black">
       {!currentChat ? (
@@ -208,12 +282,12 @@ const ChatField = () => {
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          <div className=" border-b pb-2 border-black flex justify-between">
-            <div className="flex flex-row gap-2 ">
-              {/* back button for small screens  */}
+          <div className="border-b pb-2 border-black flex justify-between">
+            <div className="flex flex-row gap-2">
+              {/* Back button for small screens */}
               <div
                 onClick={() => dispatch(setCurrentChat(null))}
-                className="flex sm:hidden items-center justify-between   cursor-pointer text-3xl font-bold"
+                className="flex sm:hidden items-center justify-between cursor-pointer text-3xl font-bold"
               >
                 <IoArrowBack />
               </div>
@@ -263,7 +337,7 @@ const ChatField = () => {
           <div
             onScroll={handleScroll}
             ref={chatContainerRef}
-            className="flex-grow overflow-y-auto  p-4 chat-container"
+            className="flex-grow overflow-y-auto p-4 chat-container"
           >
             {messages?.length > 0 ? (
               messages.map((message) => (
@@ -324,6 +398,23 @@ const ChatField = () => {
             ) : (
               <p>No messages yet...</p>
             )}
+
+            {/* Typing indicator after last message */}
+            {typingStarted ? (
+              <div className="flex flex-row gap-2 ">
+                <img
+                  src={typerImg}
+                  alt="User"
+                  className="w-10 h-10 rounded-full mr-3"
+                />
+                <div className="flex flex-row justify-start w-24 p-2 rounded-lg shadow-md bg-gray-100  text-black">
+                  <p className="">typing...</p>
+                </div>
+              </div>
+            ) : (
+              <div></div>
+            )}
+
             <div ref={chatEndRef} />
           </div>
 
@@ -333,7 +424,7 @@ const ChatField = () => {
               className="flex-1 p-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Type your message..."
               value={inputField}
-              onChange={(e) => setInputField(e.target.value)}
+              onChange={handleTyping}
             />
             <button
               onClick={handleSendMessage}

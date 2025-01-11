@@ -12,6 +12,7 @@ const {
   UPDATE_USER_STATUS_API,
   SEND_RESET_PASSWORD_API,
   UPDATE_PASSWORD_API,
+  TYPING_STATUS_API,
 } = userEndPoints;
 
 export const searchUserHandler = async (username, token) => {
@@ -153,5 +154,21 @@ export const updatePassword = async (data, navigate, dispatch) => {
     console.log(err, "error occured in updating reset mail");
   }
   dispatch(setAuthLoading(false));
+};
+
+export const typingStatusHandler = async (data) => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: TYPING_STATUS_API,
+      data: data,
+    });
+
+    if (response) {
+      console.log("typing status  successfully");
+    }
+  } catch (err) {
+    console.log(err, "error occured in tying status ");
+  }
 };
 

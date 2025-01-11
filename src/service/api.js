@@ -17,6 +17,7 @@ export const userEndPoints = {
   UPDATE_USER_STATUS_API: BASE_URL + "/user/updateUserStatus",
   SEND_RESET_PASSWORD_API: BASE_URL + "/user/sendResetLink",
   UPDATE_PASSWORD_API: BASE_URL + "/user/updatePassword",
+  TYPING_STATUS_API: BASE_URL + "/user/typingStatus",
 };
 
 export const chatEndPoints = {

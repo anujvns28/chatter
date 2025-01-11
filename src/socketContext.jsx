@@ -11,6 +11,16 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [socketReady, setSocketReady] = useState(false);
 
+  // local
+  // useEffect(() => {
+  //   if (user) {
+  //     if (!socketRef.current) {
+  //       socketRef.current = io("http://localhost:4000", {
+  //         autoConnect: false,
+  //         reconnection: true,
+  //       });
+  //     }
+  // development
   useEffect(() => {
     if (user) {
       if (!socketRef.current) {
