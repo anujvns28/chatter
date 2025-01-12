@@ -83,7 +83,7 @@ const Sidebar = () => {
             {" "}
             <IoMdSettings />
           </p>
-          <div className="absolute translate-x-8 z-50 translate-y-5">
+          <div className="absolute -translate-x-10  translate-y-7    z-50 ">
             {" "}
             {showDropDown && <DropDown />}
           </div>

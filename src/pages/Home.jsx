@@ -124,7 +124,7 @@ const Home = () => {
             <div onClick={() => setShowDropDown((prev) => !prev)}>
               <GiHamburgerMenu />
             </div>
-            <div className="absolute -translate-x-28">
+            <div className="absolute -translate-x-28  ">
               {showDropDown && <DropDown />}
             </div>
           </div>
@@ -138,16 +138,14 @@ const Home = () => {
         <div className="flex h-full w-full relative">
           {/* Chats */}
           <div
-            className={`${isSmallScreen ? "hidden" : "block"} w-[40%] h-full`}
+            className={`${isSmallScreen ? "hidden" : "block"} w-[40%] h-full `}
           >
             <Chats socket={socket} />
           </div>
 
           {/* Chats for small screens */}
           <div
-            className={`${
-              isSmallScreen ? "block" : "hidden"
-            } w-full h-full border border-blue-800`}
+            className={`${isSmallScreen ? "block" : "hidden"} w-full  h-full  `}
           >
             {currentChat ? <ChatField /> : <Chats socket={socket} />}
           </div>
