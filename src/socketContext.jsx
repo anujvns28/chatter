@@ -13,13 +13,13 @@ export const SocketProvider = ({ children }) => {
 
   // local
   // useEffect(() => {
-  //   if (user) {
-  //     if (!socketRef.current) {
-  //       socketRef.current = io("http://localhost:4000", {
-  //         autoConnect: false,
-  //         reconnection: true,
-  //       });
-  //     }
+  // if (user) {
+  //   if (!socketRef.current) {
+  //     socketRef.current = io("http://localhost:4000", {
+  //       autoConnect: false,
+  //       reconnection: true,
+  //     });
+  //   }
   // development
   useEffect(() => {
     if (user) {

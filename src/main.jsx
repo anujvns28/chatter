@@ -8,6 +8,22 @@ import { SocketProvider } from "./socketContext.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js", {
+      scope: "/",
+    })
+    .then((registration) => {
+      console.log("Service Worker registered:", registration);
+    })
+    .catch((error) => {
+      console.error("Service Worker registration failed:", error);
+    });
+}
+
+
+
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <App />

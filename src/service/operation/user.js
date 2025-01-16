@@ -1,7 +1,7 @@
 import axios from "axios";
 import { userEndPoints } from "../api";
 import { setUserLoading } from "../../slice/chatSlice";
-import { setAuthLoading } from "../../slice/authSlice";
+import { setAuthLoading, setUser } from "../../slice/authSlice";
 import { toast } from "react-toastify";
 
 const {
@@ -13,6 +13,8 @@ const {
   SEND_RESET_PASSWORD_API,
   UPDATE_PASSWORD_API,
   TYPING_STATUS_API,
+  UPDATE_USER_FCM_TOKEN,
+  SEND_NOTIFICATION_API,
 } = userEndPoints;
 
 export const searchUserHandler = async (username, token) => {
@@ -169,6 +171,42 @@ export const typingStatusHandler = async (data) => {
     }
   } catch (err) {
     console.log(err, "error occured in tying status ");
+  }
+};
+
+export const updateFCMTokneHandler = async (data, dispatch) => {
+  dispatch(setAuthLoading(true));
+  try {
+    const response = await axios({
+      method: "POST",
+      url: UPDATE_USER_FCM_TOKEN,
+      data: data,
+    });
+
+    if (response) {
+      console.log("fcm updated successfully", response);
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+      dispatch(setUser(response.data.data));
+    }
+  } catch (err) {
+    console.log(err, "error occured updating fcm token");
+  }
+  dispatch(setAuthLoading(false));
+};
+
+export const sendNotificationHandler = async (data) => {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: SEND_NOTIFICATION_API,
+      data: data,
+    });
+
+    if (response) {
+      console.log("send notification successfully");
+    }
+  } catch (err) {
+    console.log(err, "error occured sending notificaton");
   }
 };
 

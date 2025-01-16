@@ -8,6 +8,9 @@ import { SocketProvider } from "./socketContext";
 import FrogotPassword from "./pages/FrogotPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 
+
+import { useEffect } from "react";
+
 function ProtectedRoute({ children }) {
   // const token = Cookies.get("token");
   const { token } = useSelector((state) => state.auth);

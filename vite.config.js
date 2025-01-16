@@ -5,8 +5,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true, // This allows Vite to listen on all network interfaces
-    port: 5173, // Specify the port, optional
-    strictPort: true, // Optional: prevent Vite from automatically changing ports
+    host: true,
+    port: 5173,
+    strictPort: true,
   },
+  build: {
+    outDir: "dist",
+  },
+  publicDir: "public", // Ensure public directory is served
 });

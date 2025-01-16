@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { SocketContext } from "../socketContext";
 import {
   fetchAllRequestHandler,
+  sendNotificationHandler,
+  updateFCMTokneHandler,
   updateUserStatusHandler,
 } from "../service/operation/user";
 import { setNotifactionCount } from "../slice/chatSlice";
@@ -17,6 +19,10 @@ import { toast } from "react-toastify";
 import { useMediaQuery } from "react-responsive";
 import Group from "../components/core/group/Group";
 import DropDown from "../components/core/dropdown/DropDown";
+
+import { messaging } from "../firebase/firebase";
+import { getToken, onMessage } from "firebase/messaging";
+// import requestNotificationPermission from "../hooks/notification";
 
 const Home = () => {
   const {
@@ -107,6 +113,42 @@ const Home = () => {
       window.removeEventListener("mousedown", handleOutSideClickOfDropDown);
     }
   }, [showDropDown]);
+
+  // getting premision for shoing notification
+
+  const requestNotificationPermission = async () => {
+    try {
+      const fcm_token = await getToken(messaging, {
+        vapidKey:
+          "BJdcNZhHVwg2kkPF4Cunh9PSLxPBYHuK-33ySsjkfnVYzTL6vkj7AYsh6m-4HMNFYGMCGWfdx_rKEq51QHvLNyI",
+      });
+      if (token) {
+        console.log("Token:", fcm_token);
+        if (user.FCM_token !== fcm_token) {
+          const data = {
+            fcm_tokne: fcm_token,
+            token: token,
+          };
+          await updateFCMTokneHandler(data, dispatch);
+        }
+      } else {
+        console.log(
+          "No registration token available. Request permission to generate one."
+        );
+      }
+    } catch (error) {
+      console.error("Error getting token:", error);
+    }
+  };
+
+  useEffect(() => {
+    requestNotificationPermission();
+
+    onMessage(messaging, (payload) => {
+      console.log("Message received. ", payload);
+      // Show notification or update UI here
+    });
+  }, []);
 
   return (
     <div className="h-screen  w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
