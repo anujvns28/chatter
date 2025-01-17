@@ -122,15 +122,14 @@ const Home = () => {
         vapidKey:
           "BJdcNZhHVwg2kkPF4Cunh9PSLxPBYHuK-33ySsjkfnVYzTL6vkj7AYsh6m-4HMNFYGMCGWfdx_rKEq51QHvLNyI",
       });
-      if (token) {
+      if (fcm_token) {
         console.log("Token:", fcm_token);
-        if (user.FCM_token !== fcm_token) {
-          const data = {
-            fcm_tokne: fcm_token,
-            token: token,
-          };
-          await updateFCMTokneHandler(data, dispatch);
-        }
+
+        const data = {
+          fcm_tokne: fcm_token,
+          token: token,
+        };
+        await updateFCMTokneHandler(data, dispatch);
       } else {
         console.log(
           "No registration token available. Request permission to generate one."
@@ -149,6 +148,8 @@ const Home = () => {
       // Show notification or update UI here
     });
   }, []);
+
+  console.log(user, "this is user");
 
   return (
     <div className="h-screen  w-screen md:py-3 py-1 md:px-6 px-3 overflow-hidden flex flex-col">
