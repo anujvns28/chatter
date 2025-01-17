@@ -12,23 +12,23 @@ export const SocketProvider = ({ children }) => {
   const [socketReady, setSocketReady] = useState(false);
 
   // local
+  // useEffect(() => {
+  //   if (user) {
+  //     if (!socketRef.current) {
+  //       socketRef.current = io("http://localhost:4000", {
+  //         autoConnect: false,
+  //         reconnection: true,
+  //       });
+  //     }
+  // development
   useEffect(() => {
     if (user) {
       if (!socketRef.current) {
-        socketRef.current = io("http://localhost:4000", {
+        socketRef.current = io("https://chatter-server-c8kd.onrender.com", {
           autoConnect: false,
           reconnection: true,
         });
       }
-      // development
-      // useEffect(() => {
-      //   if (user) {
-      //     if (!socketRef.current) {
-      //       socketRef.current = io("https://chatter-server-c8kd.onrender.com", {
-      //         autoConnect: false,
-      //         reconnection: true,
-      //       });
-      //     }
 
       const socket = socketRef.current;
 
