@@ -125,11 +125,13 @@ const Home = () => {
       if (fcm_token) {
         console.log("Token:", fcm_token);
 
-        const data = {
-          fcm_tokne: fcm_token,
-          token: token,
-        };
-        await updateFCMTokneHandler(data, dispatch);
+        if (fcm_token !== user.FCM_token) {
+          const data = {
+            fcm_tokne: fcm_token,
+            token: token,
+          };
+          await updateFCMTokneHandler(data, dispatch);
+        }
       } else {
         console.log(
           "No registration token available. Request permission to generate one."

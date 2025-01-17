@@ -21,7 +21,7 @@ export const fetchAllChatHandler = async (token) => {
 
     if (response) {
       result = response.data;
-      console.log(response, "this is chats");
+      // console.log(response, "this is chats");
     }
   } catch (err) {
     console.log("error occured in fetching all chat", err);
