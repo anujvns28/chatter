@@ -108,6 +108,8 @@ const ChatField = () => {
   const handleSendMessage = async () => {
     if (!inputField.trim()) return;
 
+    setInputField("");
+
     const data = { content: inputField, chatId: chatDetails._id, token: token };
     const newMessage = await sendMessageHandler(data);
     if (newMessage) {
@@ -116,7 +118,7 @@ const ChatField = () => {
       setMessages((prevMessage) => [...prevMessage, response]);
       setMsgForScrolling((prev) => [...prev, response]);
     }
-    setInputField("");
+    
   };
 
   // gettting messsages in real time
