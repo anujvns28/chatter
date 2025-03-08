@@ -158,10 +158,8 @@ const Home = () => {
       {/* Search box only for phones */}
       <div className="bg-blue-600 z-10 p-4 rounded-b-lg shadow-md w-full block md:hidden">
         <div className="flex justify-between items-center">
-          {/* Logo */}
           <p className="text-white text-2xl font-bold">Chatter</p>
 
-          {/* Hamburger Menu Icon */}
           <div
             ref={dropDownRef}
             className="text-white relative text-2xl cursor-pointer"

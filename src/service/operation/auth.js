@@ -60,10 +60,12 @@ export const signup = async (data, dispatch, navigate) => {
     });
 
     if (response) {
+      console.log(response.data, "this is singup response");
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", JSON.stringify(response.data.token));
       dispatch(setUser(response.data.user));
       dispatch(setToken(response.data.token));
+
       window.location.href = "/";
     }
 
